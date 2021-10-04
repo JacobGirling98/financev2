@@ -1,13 +1,32 @@
-import React, { useState } from "react";
-import Select, { SingleValue } from "react-select";
-import CreditDebit from "../../components/forms/CreditDebit/CreditDebit";
+import React, { useEffect, useState } from "react";
+import SelectCmp from "../../components/formComponents/SelectCmp";
+import TransactionRow from "../../components/forms/TransactionRow/TransactionRow";
 
-import { SelectOptions } from "../../types/types";
+import { Transaction } from "../../types/types";
 
 import "./NewMoney.scss";
 
 const NewMoney: React.FC = () => {
   const [transactionType, setTransactionType] = useState<string>("Credit");
+  const [transactions, setTransactions] = useState<Transaction[]>([
+    {
+      date: new Date().toISOString().split("T")[0],
+      outgoing: true,
+      value: 0,
+      transactionType: null,
+      outboundAccount: null,
+      inboundAccount: null,
+      destination: null,
+      source: null,
+      description: "",
+      category: "",
+      quantity: "",
+    },
+  ]);
+
+  useEffect(() => {
+    console.log("New transactions", transactions);
+  }, [transactions]);
 
   const options: string[] = [
     "Bank Transfer",
@@ -16,15 +35,18 @@ const NewMoney: React.FC = () => {
     "Personal Transfer",
     "Income",
   ];
-  const selectOptions: SelectOptions[] = options.map((entry) => {
-    return { label: entry, value: entry };
-  });
 
-  const handleChange = (e: SingleValue<SelectOptions>) => {
-    if (e) {
-      setTransactionType(e["value"]);
-    }
-  }
+  const handleTransactionChange = (
+    index: number,
+    field: keyof Transaction,
+    value: string | boolean | number
+  ): void => {
+    console.log("Parent!");
+    let changedTransaction: Transaction[] = transactions;
+    (changedTransaction[index] as Record<typeof field, typeof value>)[field] =
+      value;
+    setTransactions([...changedTransaction]);
+  };
 
   return (
     <>
@@ -37,16 +59,36 @@ const NewMoney: React.FC = () => {
           <label htmlFor="date" className="form-label">
             Transaction Type
           </label>
-          <Select
+          <SelectCmp
             className="form-Select"
-            options={selectOptions}
+            options={options}
             id="category"
-            onChange={e => handleChange(e)}
+            value={transactionType}
+            onChange={e => setTransactionType(e)}
           />
         </div>
       </div>
-
-      <CreditDebit />
+      <form className="row g-3">
+        {transactions.map((transaction, index) => {
+          return (
+            <>
+              <div className="row mb-3">
+                <TransactionRow
+                  index={index}
+                  transaction={transaction}
+                  handleTransactionChange={handleTransactionChange}
+                  transactionType={transactionType}
+                />
+              </div>
+            </>
+          );
+        })}
+        <div className="col-12">
+          <button type="submit" className="btn btn-primary">
+            Submit
+          </button>
+        </div>
+      </form>
     </>
   );
 };
