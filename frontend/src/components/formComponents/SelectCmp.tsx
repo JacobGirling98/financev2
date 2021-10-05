@@ -13,6 +13,7 @@ const SelectCmp: React.FC<SelectCpmProps> = props => {
   const className = props.className ? props.className : "form-Select";
 
   const onChange = (value: SingleValue<SelectOptions>): void => {
+    console.log("Change");
     if (
       value &&
       props.index !== undefined &&

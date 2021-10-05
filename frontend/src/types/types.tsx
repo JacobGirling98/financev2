@@ -6,12 +6,12 @@ export interface SelectOptions {
 export interface Transaction {
   date: string;
   outgoing: boolean;
-  value: number;
-  transactionType: string | null;
-  outboundAccount: string | null;
-  inboundAccount: string | null;
-  destination: string | null;
-  source: string | null;
+  value: number | undefined;
+  transactionType: string | undefined;
+  outboundAccount: string;
+  inboundAccount: string;
+  destination: string;
+  source: string;
   description: string;
   category: string;
   quantity: string;

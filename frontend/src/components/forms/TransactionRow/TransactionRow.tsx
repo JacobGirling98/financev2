@@ -1,10 +1,10 @@
 import React from "react";
-import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { TransactionRowProps } from "../../../types/props";
 import { SelectOptions, Transaction } from "../../../types/types";
 import SelectCmp from "../../formComponents/SelectCmp";
 import "../forms.scss";
+import { TRANSACTION_FIELDS } from "../../../utils/constants";
 
 const TransactionRow: React.FC<TransactionRowProps> = props => {
   // TODO - extra to select component
@@ -41,104 +41,126 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
   return (
     <>
       <div className="col-md">
-        <label htmlFor="date" className="form-label">
+        <label htmlFor={TRANSACTION_FIELDS.date} className="form-label">
           Date
         </label>
         <input
-          type="date"
+          type={TRANSACTION_FIELDS.date}
           className="form-control"
-          id="date"
+          id={TRANSACTION_FIELDS.date}
           value={props.transaction.date}
-          // onChange={e => setDate(e.currentTarget.value)}
           onChange={e => handleInputChange(e)}
         />
       </div>
       <div className="col-md">
-        <label htmlFor="category" className="form-label">
+        <label htmlFor={TRANSACTION_FIELDS.category} className="form-label">
           Category
         </label>
         <SelectCmp
           index={props.index}
-          field="category"
+          field={TRANSACTION_FIELDS.category}
           options={categories}
           value={props.transaction.category}
-          id="category"
+          id={TRANSACTION_FIELDS.category}
           nestedOnChange={handleSelectChange}
         />
       </div>
       <div className="col-md">
-        <label htmlFor="value" className="form-label">
+        <label htmlFor={TRANSACTION_FIELDS.value} className="form-label">
           Value
         </label>
-        <input type="number" className="form-control" id="value" />
+        <input
+          type="number"
+          className="form-control"
+          id={TRANSACTION_FIELDS.value}
+          value={props.transaction.value}
+          onChange={e => handleInputChange(e)}
+        />
       </div>
       {props.transactionType === "Bank Transfer" ? (
         <div className="col-md">
-          <label htmlFor="recipient" className="form-label">
+          <label htmlFor={TRANSACTION_FIELDS.destination} className="form-label">
             Recipient
           </label>
-          <Select
-            className="form-Select"
-            options={generateOptions(recipients)}
-            id="recipient"
+          <SelectCmp
+            index={props.index}
+            field={TRANSACTION_FIELDS.destination}
+            options={recipients}
+            value={props.transaction.destination}
+            id={TRANSACTION_FIELDS.destination}
+            nestedOnChange={handleSelectChange}
           />
         </div>
       ) : null}
       {props.transactionType === "Personal Transfer" ? (
         <>
           <div className="col-md">
-            <label htmlFor="outbound" className="form-label">
+            <label htmlFor={TRANSACTION_FIELDS.outboundAccount} className="form-label">
               Outbound
             </label>
-            <Select
-              className="form-Select"
-              options={generateOptions(accounts)}
-              id="outbound"
-            />{" "}
+            <SelectCmp
+              index={props.index}
+              field={TRANSACTION_FIELDS.outboundAccount}
+              options={accounts}
+              value={props.transaction.outboundAccount}
+              id={TRANSACTION_FIELDS.outboundAccount}
+              nestedOnChange={handleSelectChange}
+            />
           </div>
           <div className="col-md">
-            <label htmlFor="inbound" className="form-label">
+            <label htmlFor={TRANSACTION_FIELDS.inboundAccount} className="form-label">
               Inbound
             </label>
-            <Select
-              className="form-Select"
-              options={generateOptions(accounts)}
-              id="inbound"
+            <SelectCmp
+              index={props.index}
+              field={TRANSACTION_FIELDS.inboundAccount}
+              options={accounts}
+              value={props.transaction.inboundAccount}
+              id={TRANSACTION_FIELDS.inboundAccount}
+              nestedOnChange={handleSelectChange}
             />
           </div>
         </>
       ) : null}
       {props.transactionType === "Income" ? (
         <div className="col-md">
-          <label htmlFor="source" className="form-label">
+          <label htmlFor={TRANSACTION_FIELDS.source} className="form-label">
             Source
           </label>
-          <Select
-            className="form-Select"
-            options={generateOptions(sources)}
-            id="source"
-          />
+          <SelectCmp
+              index={props.index}
+              field={TRANSACTION_FIELDS.source}
+              options={sources}
+              value={props.transaction.source}
+              id={TRANSACTION_FIELDS.source}
+              nestedOnChange={handleSelectChange}
+            />
         </div>
       ) : null}
       {props.transactionType === "Bank Transfer" ||
       props.transactionType === "Credit" ||
       props.transactionType === "Debit" ? (
         <div className="col-md">
-          <label htmlFor="quantity" className="form-label">
+          <label htmlFor={TRANSACTION_FIELDS.quantity} className="form-label">
             Quantity
           </label>
-          <input type="number" className="form-control" id="quantity" />
+          <input 
+            type="number" 
+            className="form-control" 
+            id={TRANSACTION_FIELDS.quantity}
+            value={props.transaction.quantity}
+            onChange={e => handleInputChange(e)}
+          />
         </div>
       ) : null}
-
       <div className="col-md">
-        <label htmlFor="description" className="form-label">
+        <label htmlFor={TRANSACTION_FIELDS.description} className="form-label">
           Category
         </label>
         <CreatableSelect
           className="form-Select"
           options={generateOptions(descriptions)}
-          id="description"
+          id={TRANSACTION_FIELDS.description}
         />
       </div>
     </>
