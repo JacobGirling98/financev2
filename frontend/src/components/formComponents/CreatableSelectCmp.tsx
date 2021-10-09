@@ -1,9 +1,10 @@
 import React from "react";
-import Select, { SingleValue } from "react-select";
-import { SelectCmpProps } from "../../types/props";
+import { SingleValue } from "react-select";
+import CreatableSelect from "react-select/creatable";
+import { CreatableSelectCmpProps } from "../../types/props";
 import { SelectOptions } from "../../types/types";
 
-const SelectCmp: React.FC<SelectCmpProps> = props => {
+const CreatableSelectCmp: React.FC<CreatableSelectCmpProps> = props => {
   const options: SelectOptions[] = props.options.map(entry => {
     return { label: entry, value: entry };
   });
@@ -13,27 +14,26 @@ const SelectCmp: React.FC<SelectCmpProps> = props => {
   const className = props.className ? props.className : "form-Select";
 
   const onChange = (value: SingleValue<SelectOptions>): void => {
-    if (
-      value &&
-      props.index !== undefined &&
-      props.field !== undefined &&
-      props.nestedOnChange !== undefined
-    ) {
+    if (value) {
       props.nestedOnChange(props.index, props.field, value["value"]);
-    } else if (value && props.onChange) {
-      props.onChange(value["value"]);
     }
   };
 
+  const onCreateOption = (value: string): void => {
+    props.setDescriptions([...props.descriptions, value])
+    props.nestedOnChange(props.index, props.field, value);
+  }
+
   return (
-    <Select
+    <CreatableSelect
       className={className}
       options={options}
       value={value}
       id={props.id}
       onChange={e => onChange(e)}
+      onCreateOption={e => onCreateOption(e)}
     />
   );
 };
 
-export default SelectCmp;
+export default CreatableSelectCmp;

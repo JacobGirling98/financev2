@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import SelectCmp from "../../components/formComponents/SelectCmp";
 import TransactionRow from "../../components/forms/TransactionRow/TransactionRow";
+import axios from "axios";
 
-import { Transaction } from "../../types/types";
+import { GetAllFormOptionsResponse, Transaction } from "../../types/types";
+import { GET_ALL_FORM_OPTIONS } from "../../utils/endpoints";
 
 import "./NewMoney.scss";
+
+
 
 const NewMoney: React.FC = () => {
   const [transactionType, setTransactionType] = useState<string>("Credit");
@@ -23,10 +27,19 @@ const NewMoney: React.FC = () => {
       quantity: "",
     },
   ]);
+  const [accounts, setAccounts] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [descriptions, setDescriptions] = useState<string[]>([]);
+  const [incomeSource, setIncomeSource] = useState<string[]>([]);
+  const [payees, setPayees] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log("New transactions", transactions);
-  }, [transactions]);
+    console.log(descriptions);
+  }, [descriptions]);
+
+  useEffect(() => {
+    setFormOptions();
+  }, [])
 
   const options: string[] = [
     "Bank Transfer",
@@ -36,17 +49,27 @@ const NewMoney: React.FC = () => {
     "Income",
   ];
 
+  const setFormOptions = async () => {
+    const response: GetAllFormOptionsResponse = await axios(GET_ALL_FORM_OPTIONS);
+    setAccounts(response.data.accounts);
+    setCategories(response.data.categories);
+    setDescriptions(response.data.descriptions);
+    setIncomeSource(response.data.incomeSource);
+    setPayees(response.data.payees);
+  }
+
   const handleTransactionChange = (
     index: number,
     field: keyof Transaction,
     value: string | boolean | number
   ): void => {
-    console.log("Parent!");
     let changedTransaction: Transaction[] = transactions;
     (changedTransaction[index] as Record<typeof field, typeof value>)[field] =
       value;
     setTransactions([...changedTransaction]);
   };
+
+  const readyToRender = accounts && categories && descriptions && incomeSource && payees;
 
   return (
     <>
@@ -69,20 +92,26 @@ const NewMoney: React.FC = () => {
         </div>
       </div>
       <form className="row g-3">
-        {transactions.map((transaction, index) => {
+        {readyToRender ? transactions.map((transaction, index) => {
           return (
             <>
               <div className="row mb-3">
                 <TransactionRow
                   index={index}
                   transaction={transaction}
+                  accounts={accounts}
+                  categories={categories}
+                  descriptions={descriptions}
+                  incomeSources={incomeSource}
+                  payees={payees}
                   handleTransactionChange={handleTransactionChange}
                   transactionType={transactionType}
+                  setDescriptions={setDescriptions}
                 />
               </div>
             </>
           );
-        })}
+        }) : null}
         <div className="col-12">
           <button type="submit" className="btn btn-primary">
             Submit

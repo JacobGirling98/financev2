@@ -1,27 +1,12 @@
 import React from "react";
-import CreatableSelect from "react-select/creatable";
 import { TransactionRowProps } from "../../../types/props";
-import { SelectOptions, Transaction } from "../../../types/types";
+import { Transaction } from "../../../types/types";
 import SelectCmp from "../../formComponents/SelectCmp";
 import "../forms.scss";
 import { TRANSACTION_FIELDS } from "../../../utils/constants";
+import CreatableSelectCmp from "../../formComponents/CreatableSelectCmp";
 
 const TransactionRow: React.FC<TransactionRowProps> = props => {
-  // TODO - extra to select component
-  const generateOptions = (options: string[]): SelectOptions[] => {
-    let selectOptions: SelectOptions[] = options.map(entry => {
-      return { label: entry, value: entry };
-    });
-    return selectOptions;
-  };
-
-  // TODO - static data
-  const categories = ["first category", "second category"];
-  const recipients = ["first recipient", "second recipient"];
-  const accounts = ["first account", "second account"];
-  const sources = ["first source", "second source"];
-  const descriptions = ["first description", "second description"];
-
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>): void => {
     props.handleTransactionChange(
       props.index,
@@ -59,7 +44,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
         <SelectCmp
           index={props.index}
           field={TRANSACTION_FIELDS.category}
-          options={categories}
+          options={props.categories}
           value={props.transaction.category}
           id={TRANSACTION_FIELDS.category}
           nestedOnChange={handleSelectChange}
@@ -85,7 +70,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           <SelectCmp
             index={props.index}
             field={TRANSACTION_FIELDS.destination}
-            options={recipients}
+            options={props.payees}
             value={props.transaction.destination}
             id={TRANSACTION_FIELDS.destination}
             nestedOnChange={handleSelectChange}
@@ -101,7 +86,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
             <SelectCmp
               index={props.index}
               field={TRANSACTION_FIELDS.outboundAccount}
-              options={accounts}
+              options={props.accounts}
               value={props.transaction.outboundAccount}
               id={TRANSACTION_FIELDS.outboundAccount}
               nestedOnChange={handleSelectChange}
@@ -114,7 +99,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
             <SelectCmp
               index={props.index}
               field={TRANSACTION_FIELDS.inboundAccount}
-              options={accounts}
+              options={props.accounts}
               value={props.transaction.inboundAccount}
               id={TRANSACTION_FIELDS.inboundAccount}
               nestedOnChange={handleSelectChange}
@@ -130,7 +115,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           <SelectCmp
               index={props.index}
               field={TRANSACTION_FIELDS.source}
-              options={sources}
+              options={props.incomeSources}
               value={props.transaction.source}
               id={TRANSACTION_FIELDS.source}
               nestedOnChange={handleSelectChange}
@@ -155,12 +140,17 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
       ) : null}
       <div className="col-md">
         <label htmlFor={TRANSACTION_FIELDS.description} className="form-label">
-          Category
+          Description
         </label>
-        <CreatableSelect
-          className="form-Select"
-          options={generateOptions(descriptions)}
+        <CreatableSelectCmp
+          field="description"
+          index={props.index}
+          options={props.descriptions}
           id={TRANSACTION_FIELDS.description}
+          value={props.transaction.description}
+          nestedOnChange={handleSelectChange}
+          descriptions={props.descriptions}
+          setDescriptions={props.setDescriptions}
         />
       </div>
     </>
