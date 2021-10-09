@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { MouseEvent, useEffect, useState } from "react";
 import SelectCmp from "../../components/formComponents/SelectCmp";
 import TransactionRow from "../../components/forms/TransactionRow/TransactionRow";
 import axios from "axios";
@@ -34,12 +35,12 @@ const NewMoney: React.FC = () => {
   const [payees, setPayees] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log(descriptions);
-  }, [descriptions]);
+    setFormOptions();
+  }, []);
 
   useEffect(() => {
-    setFormOptions();
-  }, [])
+    resetTransactions();
+  }, [transactionType]);
 
   const options: string[] = [
     "Bank Transfer",
@@ -69,6 +70,51 @@ const NewMoney: React.FC = () => {
     setTransactions([...changedTransaction]);
   };
 
+  const resetTransactions = () => {
+    setTransactions([{
+      date: new Date().toISOString().split("T")[0],
+      outgoing: true,
+      value: undefined,
+      transactionType: "",
+      outboundAccount: "",
+      inboundAccount: "",
+      destination: "",
+      source: "",
+      description: "",
+      category: "",
+      quantity: "",
+    }])
+  }
+
+  const addRow = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setTransactions([...transactions, {
+      date: new Date().toISOString().split("T")[0],
+      outgoing: true,
+      value: undefined,
+      transactionType: "",
+      outboundAccount: "",
+      inboundAccount: "",
+      destination: "",
+      source: "",
+      description: "",
+      category: "",
+      quantity: "",
+    }])
+  }
+
+  const clearRows = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    resetTransactions();
+  }
+
+  const removeRows = (event: MouseEvent<HTMLButtonElement>, index: number): void => {
+    event.preventDefault();
+    let newTransactions = [...transactions];
+    newTransactions.splice(index, 1);
+    setTransactions(newTransactions);
+  }
+
   const readyToRender = accounts && categories && descriptions && incomeSource && payees;
 
   return (
@@ -79,13 +125,13 @@ const NewMoney: React.FC = () => {
           <small className="text-muted fst-italic">{transactionType}</small>
         </h1>
         <div className="col-md-2">
-          <label htmlFor="date" className="form-label">
+          <label htmlFor="transactionType" className="form-label">
             Transaction Type
           </label>
           <SelectCmp
             className="form-Select"
             options={options}
-            id="category"
+            id="transactionType"
             value={transactionType}
             onChange={e => setTransactionType(e)}
           />
@@ -107,14 +153,21 @@ const NewMoney: React.FC = () => {
                   handleTransactionChange={handleTransactionChange}
                   transactionType={transactionType}
                   setDescriptions={setDescriptions}
+                  removeRows={removeRows}
                 />
               </div>
             </>
           );
         }) : null}
         <div className="col-12">
-          <button type="submit" className="btn btn-primary">
+          <button type="button" className="btn btn-outline-success mx-1">
             Submit
+          </button>
+          <button type="button" className="btn btn-outline-primary mx-1" onClick={e => addRow(e)}>
+            Add row
+          </button>
+          <button type="button" className="btn btn-outline-danger mx-1" onClick={e => clearRows(e)}>
+            Clear
           </button>
         </div>
       </form>

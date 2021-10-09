@@ -1,3 +1,4 @@
+import { MouseEvent } from "react";
 import * as TYPES from "./types";
 
 export interface SelectCmpProps {
@@ -46,4 +47,5 @@ export interface TransactionRowProps {
   ) => void;
   transactionType: string;
   setDescriptions: (newDescriptions: string[]) => void;
+  removeRows: (event: MouseEvent<HTMLButtonElement>, index: number) => void;
 }

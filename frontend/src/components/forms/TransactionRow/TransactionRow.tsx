@@ -6,7 +6,7 @@ import "../forms.scss";
 import { TRANSACTION_FIELDS } from "../../../utils/constants";
 import CreatableSelectCmp from "../../formComponents/CreatableSelectCmp";
 
-const TransactionRow: React.FC<TransactionRowProps> = props => {
+const TransactionRow: React.FC<TransactionRowProps> = (props) => {
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>): void => {
     props.handleTransactionChange(
       props.index,
@@ -34,7 +34,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           className="form-control"
           id={TRANSACTION_FIELDS.date}
           value={props.transaction.date}
-          onChange={e => handleInputChange(e)}
+          onChange={(e) => handleInputChange(e)}
         />
       </div>
       <div className="col-md">
@@ -59,12 +59,15 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           className="form-control"
           id={TRANSACTION_FIELDS.value}
           value={props.transaction.value}
-          onChange={e => handleInputChange(e)}
+          onChange={(e) => handleInputChange(e)}
         />
       </div>
       {props.transactionType === "Bank Transfer" ? (
         <div className="col-md">
-          <label htmlFor={TRANSACTION_FIELDS.destination} className="form-label">
+          <label
+            htmlFor={TRANSACTION_FIELDS.destination}
+            className="form-label"
+          >
             Recipient
           </label>
           <SelectCmp
@@ -80,7 +83,10 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
       {props.transactionType === "Personal Transfer" ? (
         <>
           <div className="col-md">
-            <label htmlFor={TRANSACTION_FIELDS.outboundAccount} className="form-label">
+            <label
+              htmlFor={TRANSACTION_FIELDS.outboundAccount}
+              className="form-label"
+            >
               Outbound
             </label>
             <SelectCmp
@@ -93,7 +99,10 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
             />
           </div>
           <div className="col-md">
-            <label htmlFor={TRANSACTION_FIELDS.inboundAccount} className="form-label">
+            <label
+              htmlFor={TRANSACTION_FIELDS.inboundAccount}
+              className="form-label"
+            >
               Inbound
             </label>
             <SelectCmp
@@ -113,13 +122,13 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
             Source
           </label>
           <SelectCmp
-              index={props.index}
-              field={TRANSACTION_FIELDS.source}
-              options={props.incomeSources}
-              value={props.transaction.source}
-              id={TRANSACTION_FIELDS.source}
-              nestedOnChange={handleSelectChange}
-            />
+            index={props.index}
+            field={TRANSACTION_FIELDS.source}
+            options={props.incomeSources}
+            value={props.transaction.source}
+            id={TRANSACTION_FIELDS.source}
+            nestedOnChange={handleSelectChange}
+          />
         </div>
       ) : null}
       {props.transactionType === "Bank Transfer" ||
@@ -129,12 +138,12 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           <label htmlFor={TRANSACTION_FIELDS.quantity} className="form-label">
             Quantity
           </label>
-          <input 
-            type="number" 
-            className="form-control" 
+          <input
+            type="number"
+            className="form-control"
             id={TRANSACTION_FIELDS.quantity}
             value={props.transaction.quantity}
-            onChange={e => handleInputChange(e)}
+            onChange={(e) => handleInputChange(e)}
           />
         </div>
       ) : null}
@@ -151,6 +160,16 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           nestedOnChange={handleSelectChange}
           descriptions={props.descriptions}
           setDescriptions={props.setDescriptions}
+        />
+      </div>
+      <div className="col-md-1">
+        <label htmlFor="close" className="form-label"></label>
+        <button
+          type="button"
+          id="close"
+          className="form-control btn-close pt-4"
+          aria-label="Close"
+          onClick={(e) => props.removeRows(e, props.index)}
         />
       </div>
     </>
