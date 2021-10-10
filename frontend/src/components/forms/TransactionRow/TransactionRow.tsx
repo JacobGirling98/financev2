@@ -1,10 +1,12 @@
 import React from "react";
 import { TransactionRowProps } from "../../../types/props";
-import { Transaction } from "../../../types/types";
+import { Transaction, CurrencyValues } from "../../../types/types";
 import SelectCmp from "../../formComponents/SelectCmp";
 import "../forms.scss";
 import { TRANSACTION_FIELDS } from "../../../utils/constants";
 import CreatableSelectCmp from "../../formComponents/CreatableSelectCmp";
+import CurrencyFormat from "react-currency-format";
+
 
 const TransactionRow: React.FC<TransactionRowProps> = (props) => {
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>): void => {
@@ -22,6 +24,10 @@ const TransactionRow: React.FC<TransactionRowProps> = (props) => {
   ): void => {
     props.handleTransactionChange(index, field as keyof Transaction, value);
   };
+
+  const handleValueChange = (values: CurrencyValues) => {
+    props.handleTransactionChange(props.index, "value" as keyof Transaction, values.floatValue);
+  }
 
   return (
     <>
@@ -54,12 +60,13 @@ const TransactionRow: React.FC<TransactionRowProps> = (props) => {
         <label htmlFor={TRANSACTION_FIELDS.value} className="form-label">
           Value
         </label>
-        <input
-          type="number"
+        <CurrencyFormat
           className="form-control"
-          id={TRANSACTION_FIELDS.value}
           value={props.transaction.value}
-          onChange={(e) => handleInputChange(e)}
+          prefix="£"
+          decimalScale={2}
+          fixedDecimalScale={true}
+          onValueChange={e => handleValueChange(e)}
         />
       </div>
       {props.transactionType === "Bank Transfer" ? (
@@ -169,6 +176,7 @@ const TransactionRow: React.FC<TransactionRowProps> = (props) => {
           id="close"
           className="form-control btn-close pt-4"
           aria-label="Close"
+          disabled={props.removeRowsDisabled}
           onClick={(e) => props.removeRows(e, props.index)}
         />
       </div>

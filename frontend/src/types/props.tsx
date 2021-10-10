@@ -48,4 +48,5 @@ export interface TransactionRowProps {
   transactionType: string;
   setDescriptions: (newDescriptions: string[]) => void;
   removeRows: (event: MouseEvent<HTMLButtonElement>, index: number) => void;
+  removeRowsDisabled: boolean;
 }

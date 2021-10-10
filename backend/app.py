@@ -9,6 +9,9 @@ app = Flask(__name__)
 CORS(app)
 
 
+utils = Utils("data/prod")
+
+
 @app.route("/formoptions/", methods=['GET'])
 def get_form_options() -> json:
   """
@@ -19,6 +22,7 @@ def get_form_options() -> json:
       "data": utils.get_unique_descriptions() if data_type == "descriptions" else utils.get_data_as_list(data_type)
   }
   return jsonify(response)
+
 
 @app.route("/formoptions/all", methods=['GET'])
 def get_all_form_options() -> json:
@@ -35,7 +39,15 @@ def get_all_form_options() -> json:
   return jsonify(response)
 
 
-if __name__ == "__main__":
-  utils = Utils("data/prod")
+@app.route("/newmoney/", methods=['POST'])
+def new_transaction():
+  """
+  Adds transactions to data csv
+  """
+  data = json.loads(request.data)
+  print(data)
+  return "hello"
 
+
+if __name__ == "__main__":
   app.run()

@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { MouseEvent, useEffect, useState } from "react";
+import React, { FormEvent, MouseEvent, useEffect, useState } from "react";
 import SelectCmp from "../../components/formComponents/SelectCmp";
 import TransactionRow from "../../components/forms/TransactionRow/TransactionRow";
 import axios from "axios";
 
-import { GetAllFormOptionsResponse, Transaction } from "../../types/types";
-import { GET_ALL_FORM_OPTIONS } from "../../utils/endpoints";
+import { GetAllFormOptionsResponse, NewMoneyRequest, Transaction } from "../../types/types";
+import { GET_ALL_FORM_OPTIONS, SUBMIT_NEW_MONEY } from "../../utils/endpoints";
 
 import "./NewMoney.scss";
-
 
 
 const NewMoney: React.FC = () => {
@@ -41,6 +40,10 @@ const NewMoney: React.FC = () => {
   useEffect(() => {
     resetTransactions();
   }, [transactionType]);
+
+  useEffect(() => {
+    console.log(transactions)
+  }, [transactions]);
 
   const options: string[] = [
     "Bank Transfer",
@@ -88,7 +91,7 @@ const NewMoney: React.FC = () => {
 
   const addRow = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setTransactions([...transactions, {
+    let newTransaction: Transaction = {
       date: new Date().toISOString().split("T")[0],
       outgoing: true,
       value: undefined,
@@ -100,7 +103,11 @@ const NewMoney: React.FC = () => {
       description: "",
       category: "",
       quantity: "",
-    }])
+    }
+    newTransaction.date = transactions[transactions.length - 1].date;
+    newTransaction.destination = transactions[transactions.length - 1].destination;
+    newTransaction.category = transactions[transactions.length - 1].category;
+    setTransactions([...transactions, newTransaction]);
   }
 
   const clearRows = (event: MouseEvent<HTMLButtonElement>) => {
@@ -113,6 +120,22 @@ const NewMoney: React.FC = () => {
     let newTransactions = [...transactions];
     newTransactions.splice(index, 1);
     setTransactions(newTransactions);
+  }
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    console.log("Submit");
+    event.preventDefault();
+    event.currentTarget.className += " was-validated";
+
+    const request: NewMoneyRequest = {
+      method: "post",
+      url: SUBMIT_NEW_MONEY,
+      headers: { "content-type": "application/json" },
+      data: { transactions },
+    };
+
+    let res = await axios(request);
+
   }
 
   const readyToRender = accounts && categories && descriptions && incomeSource && payees;
@@ -137,7 +160,7 @@ const NewMoney: React.FC = () => {
           />
         </div>
       </div>
-      <form className="row g-3">
+      <form className="row g-3 requires-validation" noValidate onSubmit={e => handleSubmit(e)}>
         {readyToRender ? transactions.map((transaction, index) => {
           return (
             <>
@@ -154,13 +177,14 @@ const NewMoney: React.FC = () => {
                   transactionType={transactionType}
                   setDescriptions={setDescriptions}
                   removeRows={removeRows}
+                  removeRowsDisabled={transactions.length === 1}
                 />
               </div>
             </>
           );
         }) : null}
         <div className="col-12">
-          <button type="button" className="btn btn-outline-success mx-1">
+          <button type="submit" className="btn btn-outline-success mx-1">
             Submit
           </button>
           <button type="button" className="btn btn-outline-primary mx-1" onClick={e => addRow(e)}>

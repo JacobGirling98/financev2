@@ -28,3 +28,24 @@ export interface GetAllFormOptionsData {
 export interface GetAllFormOptionsResponse {
   data: GetAllFormOptionsData
 }
+
+export interface CurrencyValues {
+  formattedValue: string;
+  value: string;
+  floatValue: number
+}
+
+export interface Headers {
+  "content-type": string;
+}
+
+export interface NewMoneyRequestData {
+  transactions: Transaction[];
+}
+
+export interface NewMoneyRequest {
+  method: string;
+  url: string;
+  headers: Headers;
+  data: NewMoneyRequestData;
+}
