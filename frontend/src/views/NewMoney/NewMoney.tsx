@@ -41,10 +41,6 @@ const NewMoney: React.FC = () => {
     resetTransactions();
   }, [transactionType]);
 
-  useEffect(() => {
-    console.log(transactions)
-  }, [transactions]);
-
   const options: string[] = [
     "Bank Transfer",
     "Credit",
@@ -134,7 +130,7 @@ const NewMoney: React.FC = () => {
       data: { transactions },
     };
 
-    let res = await axios(request);
+    // let res = await axios(request);
 
   }
 
