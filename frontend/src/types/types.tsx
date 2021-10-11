@@ -1,6 +1,6 @@
 export interface SelectOptions {
-  label: string;
-  value: string;
+  readonly label: string;
+  readonly value: string;
 }
 
 export interface Transaction {
@@ -15,4 +15,37 @@ export interface Transaction {
   description: string;
   category: string;
   quantity: string;
+}
+
+export interface GetAllFormOptionsData {
+  accounts: string[];
+  categories: string[];
+  descriptions: string[];
+  incomeSource: string[];
+  payees: string[];
+}
+
+export interface GetAllFormOptionsResponse {
+  data: GetAllFormOptionsData
+}
+
+export interface CurrencyValues {
+  formattedValue: string;
+  value: string;
+  floatValue: number
+}
+
+export interface Headers {
+  "content-type": string;
+}
+
+export interface NewMoneyRequestData {
+  transactions: Transaction[];
+}
+
+export interface NewMoneyRequest {
+  method: string;
+  url: string;
+  headers: Headers;
+  data: NewMoneyRequestData;
 }
