@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-class Utils:
+class DataUtils:
 
   def __init__(self, data_path):
     self.data_path = data_path

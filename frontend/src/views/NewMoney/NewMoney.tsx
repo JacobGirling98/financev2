@@ -4,11 +4,14 @@ import SelectCmp from "../../components/formComponents/SelectCmp";
 import TransactionRow from "../../components/forms/TransactionRow/TransactionRow";
 import axios from "axios";
 
-import { GetAllFormOptionsResponse, NewMoneyRequest, Transaction } from "../../types/types";
-import { GET_ALL_FORM_OPTIONS, SUBMIT_NEW_MONEY } from "../../utils/endpoints";
+import {
+  GetAllFormOptionsResponse,
+  NewMoneyRequest,
+  Transaction,
+} from "../../types/types";
+import { GET_FORM_OPTIONS_URL, NEW_MONEY_URL } from "../../utils/api-urls";
 
 import "./NewMoney.scss";
-
 
 const NewMoney: React.FC = () => {
   const [transactionType, setTransactionType] = useState<string>("Credit");
@@ -16,7 +19,7 @@ const NewMoney: React.FC = () => {
     {
       date: new Date().toISOString().split("T")[0],
       outgoing: true,
-      value: undefined,
+      value: 0,
       transactionType: "",
       outboundAccount: "",
       inboundAccount: "",
@@ -41,7 +44,7 @@ const NewMoney: React.FC = () => {
     resetTransactions();
   }, [transactionType]);
 
-  const options: string[] = [
+  const transactionTypes: string[] = [
     "Bank Transfer",
     "Credit",
     "Debit",
@@ -50,13 +53,15 @@ const NewMoney: React.FC = () => {
   ];
 
   const setFormOptions = async () => {
-    const response: GetAllFormOptionsResponse = await axios(GET_ALL_FORM_OPTIONS);
+    const response: GetAllFormOptionsResponse = await axios.get(
+      GET_FORM_OPTIONS_URL
+    );
     setAccounts(response.data.accounts);
     setCategories(response.data.categories);
     setDescriptions(response.data.descriptions);
     setIncomeSource(response.data.incomeSource);
     setPayees(response.data.payees);
-  }
+  };
 
   const handleTransactionChange = (
     index: number,
@@ -70,27 +75,29 @@ const NewMoney: React.FC = () => {
   };
 
   const resetTransactions = () => {
-    setTransactions([{
-      date: new Date().toISOString().split("T")[0],
-      outgoing: true,
-      value: undefined,
-      transactionType: "",
-      outboundAccount: "",
-      inboundAccount: "",
-      destination: "",
-      source: "",
-      description: "",
-      category: "",
-      quantity: "",
-    }])
-  }
+    setTransactions([
+      {
+        date: new Date().toISOString().split("T")[0],
+        outgoing: true,
+        value: 0,
+        transactionType: "",
+        outboundAccount: "",
+        inboundAccount: "",
+        destination: "",
+        source: "",
+        description: "",
+        category: "",
+        quantity: "",
+      },
+    ]);
+  };
 
   const addRow = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     let newTransaction: Transaction = {
       date: new Date().toISOString().split("T")[0],
       outgoing: true,
-      value: undefined,
+      value: 0,
       transactionType: "",
       outboundAccount: "",
       inboundAccount: "",
@@ -99,42 +106,46 @@ const NewMoney: React.FC = () => {
       description: "",
       category: "",
       quantity: "",
-    }
+    };
     newTransaction.date = transactions[transactions.length - 1].date;
-    newTransaction.destination = transactions[transactions.length - 1].destination;
+    newTransaction.destination =
+      transactions[transactions.length - 1].destination;
     newTransaction.category = transactions[transactions.length - 1].category;
     setTransactions([...transactions, newTransaction]);
-  }
+  };
 
   const clearRows = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     resetTransactions();
-  }
+  };
 
-  const removeRows = (event: MouseEvent<HTMLButtonElement>, index: number): void => {
+  const removeRows = (
+    event: MouseEvent<HTMLButtonElement>,
+    index: number
+  ): void => {
     event.preventDefault();
     let newTransactions = [...transactions];
     newTransactions.splice(index, 1);
     setTransactions(newTransactions);
-  }
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     console.log("Submit");
     event.preventDefault();
-    event.currentTarget.className += " was-validated";
+    // event.currentTarget.className += " was-validated";
+    let localTransactions = transactions;
+    localTransactions.forEach(trans => {
+      trans.outgoing = transactionType === "Income";
+      trans.transactionType = transactionType;
+    });
+    setTransactions(localTransactions);
+    console.log({ transactions });
+    let res = await axios.post(NEW_MONEY_URL, { transactions });
+    console.log(res);
+  };
 
-    const request: NewMoneyRequest = {
-      method: "post",
-      url: SUBMIT_NEW_MONEY,
-      headers: { "content-type": "application/json" },
-      data: { transactions },
-    };
-
-    // let res = await axios(request);
-
-  }
-
-  const readyToRender = accounts && categories && descriptions && incomeSource && payees;
+  const readyToRender =
+    accounts && categories && descriptions && incomeSource && payees;
 
   return (
     <>
@@ -149,44 +160,56 @@ const NewMoney: React.FC = () => {
           </label>
           <SelectCmp
             className="form-Select"
-            options={options}
+            options={transactionTypes}
             id="transactionType"
             value={transactionType}
             onChange={e => setTransactionType(e)}
           />
         </div>
       </div>
-      <form className="row g-3 requires-validation" noValidate onSubmit={e => handleSubmit(e)}>
-        {readyToRender ? transactions.map((transaction, index) => {
-          return (
-            <>
-              <div className="row mb-3">
-                <TransactionRow
-                  index={index}
-                  transaction={transaction}
-                  accounts={accounts}
-                  categories={categories}
-                  descriptions={descriptions}
-                  incomeSources={incomeSource}
-                  payees={payees}
-                  handleTransactionChange={handleTransactionChange}
-                  transactionType={transactionType}
-                  setDescriptions={setDescriptions}
-                  removeRows={removeRows}
-                  removeRowsDisabled={transactions.length === 1}
-                />
-              </div>
-            </>
-          );
-        }) : null}
+      <form
+        className="row g-3 requires-validation"
+        noValidate
+        onSubmit={e => handleSubmit(e)}
+      >
+        {readyToRender
+          ? transactions.map((transaction, index) => {
+              return (
+                <div className="row mb-3">
+                  <TransactionRow
+                    index={index}
+                    transaction={transaction}
+                    accounts={accounts}
+                    categories={categories}
+                    descriptions={descriptions}
+                    incomeSources={incomeSource}
+                    payees={payees}
+                    handleTransactionChange={handleTransactionChange}
+                    transactionType={transactionType}
+                    setDescriptions={setDescriptions}
+                    removeRows={removeRows}
+                    removeRowsDisabled={transactions.length === 1}
+                  />
+                </div>
+              );
+            })
+          : null}
         <div className="col-12">
           <button type="submit" className="btn btn-outline-success mx-1">
             Submit
           </button>
-          <button type="button" className="btn btn-outline-primary mx-1" onClick={e => addRow(e)}>
+          <button
+            type="button"
+            className="btn btn-outline-primary mx-1"
+            onClick={e => addRow(e)}
+          >
             Add row
           </button>
-          <button type="button" className="btn btn-outline-danger mx-1" onClick={e => clearRows(e)}>
+          <button
+            type="button"
+            className="btn btn-outline-danger mx-1"
+            onClick={e => clearRows(e)}
+          >
             Clear
           </button>
         </div>

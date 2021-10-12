@@ -1,5 +1,7 @@
 launch.json
-data
+data/dev
+data/prod
+.idea
 
 # dependencies
 node_modules
