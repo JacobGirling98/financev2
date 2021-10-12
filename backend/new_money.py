@@ -1,5 +1,4 @@
 from datetime import datetime
-from distutils.util import strtobool
 
 class NewMoney:
 
@@ -37,5 +36,7 @@ class NewMoney:
         :return: converted dict
         """
         transactions["date"] = [datetime.strptime(x, "%Y-%m-%d") for x in transactions["date"]]
+        transactions["value"] = [int(100 * x) for x in transactions["value"]]
+        transactions["quantity"] = [int(x) for x in transactions["quantity"]]
         return transactions
 
