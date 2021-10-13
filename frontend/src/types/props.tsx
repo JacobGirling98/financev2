@@ -32,6 +32,11 @@ export interface CreatableSelectCmpProps {
   ) => void;
 }
 
+export interface CurrencyCmpProps {
+  value: number | undefined
+  handleValueChange: (values: TYPES.CurrencyValues) => void;
+}
+
 export interface TransactionRowProps {
   index: number;
   transaction: TYPES.Transaction;

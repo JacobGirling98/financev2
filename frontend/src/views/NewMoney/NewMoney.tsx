@@ -19,7 +19,7 @@ const NewMoney: React.FC = () => {
     {
       date: new Date().toISOString().split("T")[0],
       outgoing: true,
-      value: 0,
+      value: undefined,
       transactionType: "",
       outboundAccount: "",
       inboundAccount: "",
@@ -43,6 +43,10 @@ const NewMoney: React.FC = () => {
   useEffect(() => {
     resetTransactions();
   }, [transactionType]);
+
+  useEffect(() => {
+    console.log(transactions)
+  }, [transactions])
 
   const transactionTypes: string[] = [
     "Bank Transfer",
@@ -79,7 +83,7 @@ const NewMoney: React.FC = () => {
       {
         date: new Date().toISOString().split("T")[0],
         outgoing: true,
-        value: 0,
+        value: undefined,
         transactionType: "",
         outboundAccount: "",
         inboundAccount: "",
@@ -97,7 +101,7 @@ const NewMoney: React.FC = () => {
     let newTransaction: Transaction = {
       date: new Date().toISOString().split("T")[0],
       outgoing: true,
-      value: 0,
+      value: undefined,
       transactionType: "",
       outboundAccount: "",
       inboundAccount: "",

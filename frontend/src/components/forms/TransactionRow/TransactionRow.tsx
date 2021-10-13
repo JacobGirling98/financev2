@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TransactionRowProps } from "../../../types/props";
 import { Transaction, CurrencyValues } from "../../../types/types";
 import SelectCmp from "../../formComponents/SelectCmp";
@@ -7,8 +7,14 @@ import { TRANSACTION_FIELDS } from "../../../utils/constants";
 import CreatableSelectCmp from "../../formComponents/CreatableSelectCmp";
 import CurrencyFormat from "react-currency-format";
 
-
 const TransactionRow: React.FC<TransactionRowProps> = (props) => {
+
+  // const [value, setValue] = useState<string>("");
+
+  useEffect(() => {
+    console.log(props.transaction.value);
+  }, [props.transaction])
+  
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>): void => {
     props.handleTransactionChange(
       props.index,
@@ -26,7 +32,7 @@ const TransactionRow: React.FC<TransactionRowProps> = (props) => {
   };
 
   const handleValueChange = (values: CurrencyValues) => {
-    props.handleTransactionChange(props.index, "value" as keyof Transaction, values.floatValue);
+    props.handleTransactionChange(props.index, "value" as keyof Transaction, values.value);
   }
 
   return (
