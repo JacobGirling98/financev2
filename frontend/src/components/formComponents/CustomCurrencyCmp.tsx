@@ -19,7 +19,7 @@ const CustomCurrencyCmp: React.FC<CurrencyCmpProps> = props => {
         id="value"
         className={className}
         type="text"
-        value={props.value}
+        value={props.value === 0 ? "" : props.value}
         onChange={e => handleChange(e)}
       />
     </div>
