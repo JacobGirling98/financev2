@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { TransactionRowProps } from "../../../types/props";
-import { Transaction, CurrencyValues } from "../../../types/types";
+import { Transaction } from "../../../types/types";
 import SelectCmp from "../../formComponents/SelectCmp";
 import "../forms.scss";
 import { TRANSACTION_FIELDS } from "../../../utils/constants";
 import CreatableSelectCmp from "../../formComponents/CreatableSelectCmp";
-import CurrencyFormat from "react-currency-format";
+import CustomCurrencyCmp from "../../formComponents/CustomCurrencyCmp";
 
-const TransactionRow: React.FC<TransactionRowProps> = (props) => {
-
+const TransactionRow: React.FC<TransactionRowProps> = props => {
   // const [value, setValue] = useState<string>("");
 
-  useEffect(() => {
-    console.log(props.transaction.value);
-  }, [props.transaction])
-  
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>): void => {
     props.handleTransactionChange(
       props.index,
@@ -31,9 +26,13 @@ const TransactionRow: React.FC<TransactionRowProps> = (props) => {
     props.handleTransactionChange(index, field as keyof Transaction, value);
   };
 
-  const handleValueChange = (values: CurrencyValues) => {
-    props.handleTransactionChange(props.index, "value" as keyof Transaction, values.value);
-  }
+  const handleValueChange = (value: string) => {
+    props.handleTransactionChange(
+      props.index,
+      "value" as keyof Transaction,
+      value
+    );
+  };
 
   return (
     <>
@@ -46,7 +45,7 @@ const TransactionRow: React.FC<TransactionRowProps> = (props) => {
           className="form-control"
           id={TRANSACTION_FIELDS.date}
           value={props.transaction.date}
-          onChange={(e) => handleInputChange(e)}
+          onChange={e => handleInputChange(e)}
         />
       </div>
       <div className="col-md">
@@ -66,13 +65,17 @@ const TransactionRow: React.FC<TransactionRowProps> = (props) => {
         <label htmlFor={TRANSACTION_FIELDS.value} className="form-label">
           Value
         </label>
-        <CurrencyFormat
+        {/* <CurrencyFormat
           className="form-control"
           value={props.transaction.value}
           prefix="£"
           decimalScale={2}
           fixedDecimalScale={true}
           onValueChange={e => handleValueChange(e)}
+        /> */}
+        <CustomCurrencyCmp
+          value={props.transaction.value}
+          handleValueChange={handleValueChange}
         />
       </div>
       {props.transactionType === "Bank Transfer" ? (
@@ -156,7 +159,7 @@ const TransactionRow: React.FC<TransactionRowProps> = (props) => {
             className="form-control"
             id={TRANSACTION_FIELDS.quantity}
             value={props.transaction.quantity}
-            onChange={(e) => handleInputChange(e)}
+            onChange={e => handleInputChange(e)}
           />
         </div>
       ) : null}
@@ -183,7 +186,7 @@ const TransactionRow: React.FC<TransactionRowProps> = (props) => {
           className="form-control btn-close pt-4"
           aria-label="Close"
           disabled={props.removeRowsDisabled}
-          onClick={(e) => props.removeRows(e, props.index)}
+          onClick={e => props.removeRows(e, props.index)}
         />
       </div>
     </>

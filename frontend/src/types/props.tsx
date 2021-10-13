@@ -33,8 +33,9 @@ export interface CreatableSelectCmpProps {
 }
 
 export interface CurrencyCmpProps {
-  value: number | undefined
-  handleValueChange: (values: TYPES.CurrencyValues) => void;
+  value: number | undefined;
+  className?: string;
+  handleValueChange: (value: string) => void;
 }
 
 export interface TransactionRowProps {
