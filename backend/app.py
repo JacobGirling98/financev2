@@ -21,6 +21,8 @@ else:
 data_utils = DataUtils(data_path)
 new_money_helper = NewMoney(data_path)
 
+new_money_helper.complete_standing_orders()
+
 
 @app.route("/form_options/", methods=['GET'])
 def get_form_options() -> json:
@@ -56,11 +58,9 @@ def new_transaction():
     Adds transactions to data csv
     """
     data: dict = json.loads(request.data)
-    print(data["transactions"])
     transactions: dict = new_money_helper.convert_to_dict(data["transactions"])
     typed_transactions: dict = new_money_helper.convert_data_types(transactions)
-    print(typed_transactions)
-    return "hello"
+    return new_money_helper.save_transactions(typed_transactions)
 
 
 if __name__ == "__main__":

@@ -11,3 +11,11 @@ export const enum TRANSACTION_FIELDS {
   category = "category",
   quantity = "quantity"
 }
+
+export const enum TRANSACTION_TYPES {
+  bankTransfer = "Bank Transfer",
+  credit = "Credit",
+  debit = "Debit",
+  income = "Income",
+  personalTransfer = "Personal Transfer"
+}

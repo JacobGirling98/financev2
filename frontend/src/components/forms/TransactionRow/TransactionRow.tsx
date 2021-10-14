@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { TransactionRowProps } from "../../../types/props";
 import { Transaction } from "../../../types/types";
 import SelectCmp from "../../formComponents/SelectCmp";
 import "../forms.scss";
-import { TRANSACTION_FIELDS } from "../../../utils/constants";
+import {
+  TRANSACTION_FIELDS,
+  TRANSACTION_TYPES,
+} from "../../../utils/constants";
 import CreatableSelectCmp from "../../formComponents/CreatableSelectCmp";
-import CustomCurrencyCmp from "../../formComponents/CustomCurrencyCmp";
+import CurrencyCmp from "../../formComponents/CurrencyCmp";
 
 const TransactionRow: React.FC<TransactionRowProps> = props => {
   // const [value, setValue] = useState<string>("");
@@ -73,12 +76,12 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           fixedDecimalScale={true}
           onValueChange={e => handleValueChange(e)}
         /> */}
-        <CustomCurrencyCmp
+        <CurrencyCmp
           value={props.transaction.value}
           handleValueChange={handleValueChange}
         />
       </div>
-      {props.transactionType === "Bank Transfer" ? (
+      {props.transactionType === TRANSACTION_TYPES.bankTransfer ? (
         <div className="col-md">
           <label
             htmlFor={TRANSACTION_FIELDS.destination}
@@ -96,7 +99,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           />
         </div>
       ) : null}
-      {props.transactionType === "Personal Transfer" ? (
+      {props.transactionType === TRANSACTION_TYPES.personalTransfer ? (
         <>
           <div className="col-md">
             <label
@@ -132,7 +135,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           </div>
         </>
       ) : null}
-      {props.transactionType === "Income" ? (
+      {props.transactionType === TRANSACTION_TYPES.income ? (
         <div className="col-md">
           <label htmlFor={TRANSACTION_FIELDS.source} className="form-label">
             Source
@@ -147,9 +150,9 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           />
         </div>
       ) : null}
-      {props.transactionType === "Bank Transfer" ||
-      props.transactionType === "Credit" ||
-      props.transactionType === "Debit" ? (
+      {props.transactionType === TRANSACTION_TYPES.bankTransfer ||
+      props.transactionType === TRANSACTION_TYPES.credit ||
+      props.transactionType === TRANSACTION_TYPES.debit ? (
         <div className="col-md">
           <label htmlFor={TRANSACTION_FIELDS.quantity} className="form-label">
             Quantity

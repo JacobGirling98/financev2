@@ -1,13 +1,15 @@
 import React from 'react'
 import { CurrencyCmpProps } from '../../types/props'
 
-const CustomCurrencyCmp: React.FC<CurrencyCmpProps> = props => {
+const CurrencyCmp: React.FC<CurrencyCmpProps> = props => {
   
   const className = props.className ? props.className : "form-control";
 
+  const decimalValidator: RegExp = /^[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)$/;
+
   const handleChange = (e: React.FormEvent<HTMLInputElement>): void => {
     let value = e.currentTarget.value;
-    if (value.split(".").length === 1 || value.split(".")[1].length <= 2) {
+    if ((value.split(".").length === 1 || value.split(".")[1].length <= 2) && (decimalValidator.test(value) || value === "")) {
       props.handleValueChange(value);
     }
   }
@@ -27,4 +29,4 @@ const CustomCurrencyCmp: React.FC<CurrencyCmpProps> = props => {
   );
 }
 
-export default CustomCurrencyCmp;
+export default CurrencyCmp;

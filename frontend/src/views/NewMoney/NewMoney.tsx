@@ -12,9 +12,13 @@ import {
 import { GET_FORM_OPTIONS_URL, NEW_MONEY_URL } from "../../utils/api-urls";
 
 import "./NewMoney.scss";
+import { TRANSACTION_TYPES } from "../../utils/constants";
+import Spinner from "../../components/Spinner";
 
 const NewMoney: React.FC = () => {
-  const [transactionType, setTransactionType] = useState<string>("Credit");
+  const [transactionType, setTransactionType] = useState<string>(
+    TRANSACTION_TYPES.credit
+  );
   const [transactions, setTransactions] = useState<Transaction[]>([
     {
       date: new Date().toISOString().split("T")[0],
@@ -35,6 +39,7 @@ const NewMoney: React.FC = () => {
   const [descriptions, setDescriptions] = useState<string[]>([]);
   const [incomeSource, setIncomeSource] = useState<string[]>([]);
   const [payees, setPayees] = useState<string[]>([]);
+  const [submitSpinner, setSubmitSpinner] = useState<boolean>(false);
 
   useEffect(() => {
     setFormOptions();
@@ -44,16 +49,12 @@ const NewMoney: React.FC = () => {
     resetTransactions();
   }, [transactionType]);
 
-  useEffect(() => {
-    console.log(transactions)
-  }, [transactions])
-
   const transactionTypes: string[] = [
-    "Bank Transfer",
-    "Credit",
-    "Debit",
-    "Personal Transfer",
-    "Income",
+    TRANSACTION_TYPES.bankTransfer,
+    TRANSACTION_TYPES.credit,
+    TRANSACTION_TYPES.debit,
+    TRANSACTION_TYPES.personalTransfer,
+    TRANSACTION_TYPES.income,
   ];
 
   const setFormOptions = async () => {
@@ -134,22 +135,33 @@ const NewMoney: React.FC = () => {
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    console.log("Submit");
     event.preventDefault();
-    // event.currentTarget.className += " was-validated";
+    setSubmitSpinner(true);
     let localTransactions = transactions;
     localTransactions.forEach(trans => {
-      trans.outgoing = transactionType === "Income";
+      trans.outgoing = transactionType !== TRANSACTION_TYPES.income;
       trans.transactionType = transactionType;
+      if (
+        transactionType === TRANSACTION_TYPES.income ||
+        transactionType === TRANSACTION_TYPES.personalTransfer
+      ) {
+        trans.quantity = "1";
+      }
     });
     setTransactions(localTransactions);
     console.log({ transactions });
     let res = await axios.post(NEW_MONEY_URL, { transactions });
     console.log(res);
+    resetTransactions();
+    setSubmitSpinner(false);
   };
 
   const readyToRender =
-    accounts && categories && descriptions && incomeSource && payees;
+    accounts.length &&
+    categories.length &&
+    descriptions.length &&
+    incomeSource.length &&
+    payees.length;
 
   return (
     <>
@@ -176,28 +188,31 @@ const NewMoney: React.FC = () => {
         noValidate
         onSubmit={e => handleSubmit(e)}
       >
-        {readyToRender
-          ? transactions.map((transaction, index) => {
-              return (
-                <div className="row mb-3">
-                  <TransactionRow
-                    index={index}
-                    transaction={transaction}
-                    accounts={accounts}
-                    categories={categories}
-                    descriptions={descriptions}
-                    incomeSources={incomeSource}
-                    payees={payees}
-                    handleTransactionChange={handleTransactionChange}
-                    transactionType={transactionType}
-                    setDescriptions={setDescriptions}
-                    removeRows={removeRows}
-                    removeRowsDisabled={transactions.length === 1}
-                  />
-                </div>
-              );
-            })
-          : null}
+        {readyToRender ? (
+          transactions.map((transaction, index) => {
+            return (
+              <div className="row mb-3">
+                <TransactionRow
+                  index={index}
+                  transaction={transaction}
+                  accounts={accounts}
+                  categories={categories}
+                  descriptions={descriptions}
+                  incomeSources={incomeSource}
+                  payees={payees}
+                  handleTransactionChange={handleTransactionChange}
+                  transactionType={transactionType}
+                  setDescriptions={setDescriptions}
+                  removeRows={removeRows}
+                  removeRowsDisabled={transactions.length === 1}
+                />
+              </div>
+            );
+          })
+        ) : (
+          <Spinner />
+        )}
+        {submitSpinner && <Spinner />}
         <div className="col-12">
           <button type="submit" className="btn btn-outline-success mx-1">
             Submit
