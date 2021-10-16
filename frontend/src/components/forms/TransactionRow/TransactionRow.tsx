@@ -44,7 +44,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           Date
         </label>
         <input
-          type={TRANSACTION_FIELDS.date}
+          type="date"
           className="form-control"
           id={TRANSACTION_FIELDS.date}
           value={props.transaction.date}

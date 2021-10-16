@@ -3,6 +3,8 @@ import React, { FormEvent, MouseEvent, useEffect, useState } from "react";
 import SelectCmp from "../../components/formComponents/SelectCmp";
 import TransactionRow from "../../components/forms/TransactionRow/TransactionRow";
 import axios from "axios";
+import { Modal, Button } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import {
   GetAllFormOptionsResponse,
@@ -34,12 +36,15 @@ const NewMoney: React.FC = () => {
       quantity: "",
     },
   ]);
+
   const [accounts, setAccounts] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [descriptions, setDescriptions] = useState<string[]>([]);
   const [incomeSource, setIncomeSource] = useState<string[]>([]);
   const [payees, setPayees] = useState<string[]>([]);
+
   const [submitSpinner, setSubmitSpinner] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   useEffect(() => {
     setFormOptions();
@@ -213,6 +218,50 @@ const NewMoney: React.FC = () => {
           <Spinner />
         )}
         {submitSpinner && <Spinner />}
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+          <Modal.Header key="upload">
+            <Modal.Title>Upload Receipt</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="form-floating">
+              <textarea
+                className="form-control"
+                placeholder="Upload your receipt"
+                id="floatingTextarea"
+              ></textarea>
+              <label htmlFor="floatingTextarea">Contents</label>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={e => {
+                setShowModal(false);
+              }}
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={e => {
+                setShowModal(false);
+              }}
+            >
+              Upload Waitrose
+            </button>
+            <button
+              type="button"
+              className="btn btn-sainsburys"
+              onClick={e => {
+                setShowModal(false);
+              }}
+            >
+              Upload Sainsbury's
+            </button>
+          </Modal.Footer>
+        </Modal>
         <div className="col-12">
           <button type="submit" className="btn btn-outline-success mx-1">
             Submit
@@ -230,6 +279,15 @@ const NewMoney: React.FC = () => {
             onClick={e => clearRows(e)}
           >
             Clear
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline-info"
+            onClick={e => {
+              setShowModal(true);
+            }}
+          >
+            Upload receipt
           </button>
         </div>
       </form>
