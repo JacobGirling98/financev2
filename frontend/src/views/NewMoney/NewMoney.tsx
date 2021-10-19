@@ -3,7 +3,7 @@ import React, { FormEvent, MouseEvent, useEffect, useState } from "react";
 import SelectCmp from "../../components/formComponents/SelectCmp";
 import TransactionRow from "../../components/forms/TransactionRow/TransactionRow";
 import axios from "axios";
-import { Modal, Button } from "react-bootstrap";
+import Modal from "react-bootstrap/modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import {
@@ -16,6 +16,7 @@ import { GET_FORM_OPTIONS_URL, NEW_MONEY_URL } from "../../utils/api-urls";
 import "./NewMoney.scss";
 import { TRANSACTION_TYPES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
+import UploadReceiptModal from "../../components/formComponents/UploadReceiptModal";
 
 const NewMoney: React.FC = () => {
   const [transactionType, setTransactionType] = useState<string>(
@@ -36,6 +37,7 @@ const NewMoney: React.FC = () => {
       quantity: "",
     },
   ]);
+  const [receipt, setReceipt] = useState<string>("");
 
   const [accounts, setAccounts] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -218,50 +220,10 @@ const NewMoney: React.FC = () => {
           <Spinner />
         )}
         {submitSpinner && <Spinner />}
-        <Modal show={showModal} onHide={() => setShowModal(false)}>
-          <Modal.Header key="upload">
-            <Modal.Title>Upload Receipt</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="form-floating">
-              <textarea
-                className="form-control"
-                placeholder="Upload your receipt"
-                id="floatingTextarea"
-              ></textarea>
-              <label htmlFor="floatingTextarea">Contents</label>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={e => {
-                setShowModal(false);
-              }}
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              className="btn btn-success"
-              onClick={e => {
-                setShowModal(false);
-              }}
-            >
-              Upload Waitrose
-            </button>
-            <button
-              type="button"
-              className="btn btn-sainsburys"
-              onClick={e => {
-                setShowModal(false);
-              }}
-            >
-              Upload Sainsbury's
-            </button>
-          </Modal.Footer>
-        </Modal>
+        <UploadReceiptModal 
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
         <div className="col-12">
           <button type="submit" className="btn btn-outline-success mx-1">
             Submit
