@@ -104,6 +104,10 @@ const NewMoney: React.FC = () => {
     ]);
   };
 
+  const addTransactions = (newTransactions: Transaction[]) => {
+    setTransactions(newTransactions);
+  }
+
   const addRow = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     let newTransaction: Transaction = {
@@ -223,6 +227,7 @@ const NewMoney: React.FC = () => {
         <UploadReceiptModal 
           showModal={showModal}
           setShowModal={setShowModal}
+          addTransactions={addTransactions}
         />
         <div className="col-12">
           <button type="submit" className="btn btn-outline-success mx-1">
