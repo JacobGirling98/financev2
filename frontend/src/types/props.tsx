@@ -42,7 +42,6 @@ export interface TransactionRowProps {
   index: number;
   transaction: TYPES.Transaction;
   accounts: string[];
-  categories: string[];
   descriptions: string[];
   incomeSources: string[];
   payees: string[];

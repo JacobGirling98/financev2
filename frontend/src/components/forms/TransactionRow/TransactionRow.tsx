@@ -9,9 +9,12 @@ import {
 } from "../../../utils/constants";
 import CreatableSelectCmp from "../../formComponents/CreatableSelectCmp";
 import CurrencyCmp from "../../formComponents/CurrencyCmp";
+import { useAppSelector } from "../../../hooks/redux";
+import { selectCategories } from "../../../stores/CategoriesSlice";
 
 const TransactionRow: React.FC<TransactionRowProps> = props => {
-  // const [value, setValue] = useState<string>("");
+
+  const categories = useAppSelector(selectCategories);
 
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>): void => {
     props.handleTransactionChange(
@@ -58,7 +61,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
         <SelectCmp
           index={props.index}
           field={TRANSACTION_FIELDS.category}
-          options={props.categories}
+          options={categories}
           value={props.transaction.category}
           id={TRANSACTION_FIELDS.category}
           nestedOnChange={handleSelectChange}

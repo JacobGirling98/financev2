@@ -3,7 +3,6 @@ import React, { FormEvent, MouseEvent, useEffect, useState } from "react";
 import SelectCmp from "../../components/formComponents/SelectCmp";
 import TransactionRow from "../../components/forms/TransactionRow/TransactionRow";
 import axios from "axios";
-import Modal from "react-bootstrap/modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import {
@@ -11,12 +10,13 @@ import {
   NewMoneyRequest,
   Transaction,
 } from "../../types/types";
-import { GET_FORM_OPTIONS_URL, NEW_MONEY_URL } from "../../utils/api-urls";
+import { FORM_OPTIONS_URL, NEW_MONEY_URL } from "../../utils/api-urls";
 
 import "./NewMoney.scss";
 import { TRANSACTION_TYPES } from "../../utils/constants";
 import Spinner from "../../components/Spinner";
 import UploadReceiptModal from "../../components/formComponents/UploadReceiptModal";
+import { useAppSelector } from "../../hooks/redux";
 
 const NewMoney: React.FC = () => {
   const [transactionType, setTransactionType] = useState<string>(
@@ -40,10 +40,11 @@ const NewMoney: React.FC = () => {
   const [receipt, setReceipt] = useState<string>("");
 
   const [accounts, setAccounts] = useState<string[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
   const [descriptions, setDescriptions] = useState<string[]>([]);
   const [incomeSource, setIncomeSource] = useState<string[]>([]);
   const [payees, setPayees] = useState<string[]>([]);
+
+  const categoriesStatus = useAppSelector(state => state.categories.status);
 
   const [submitSpinner, setSubmitSpinner] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -66,10 +67,9 @@ const NewMoney: React.FC = () => {
 
   const setFormOptions = async () => {
     const response: GetAllFormOptionsResponse = await axios.get(
-      GET_FORM_OPTIONS_URL
+      FORM_OPTIONS_URL
     );
     setAccounts(response.data.accounts);
-    setCategories(response.data.categories);
     setDescriptions(response.data.descriptions);
     setIncomeSource(response.data.incomeSource);
     setPayees(response.data.payees);
@@ -106,7 +106,7 @@ const NewMoney: React.FC = () => {
 
   const addTransactions = (newTransactions: Transaction[]) => {
     setTransactions(newTransactions);
-  }
+  };
 
   const addRow = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -169,7 +169,7 @@ const NewMoney: React.FC = () => {
 
   const readyToRender =
     accounts.length &&
-    categories.length &&
+    categoriesStatus === "succeeded" &&
     descriptions.length &&
     incomeSource.length &&
     payees.length;
@@ -207,7 +207,6 @@ const NewMoney: React.FC = () => {
                   index={index}
                   transaction={transaction}
                   accounts={accounts}
-                  categories={categories}
                   descriptions={descriptions}
                   incomeSources={incomeSource}
                   payees={payees}
@@ -224,7 +223,7 @@ const NewMoney: React.FC = () => {
           <Spinner />
         )}
         {submitSpinner && <Spinner />}
-        <UploadReceiptModal 
+        <UploadReceiptModal
           showModal={showModal}
           setShowModal={setShowModal}
           addTransactions={addTransactions}
