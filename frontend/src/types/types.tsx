@@ -49,3 +49,13 @@ export interface NewMoneyRequest {
   headers: Headers;
   data: NewMoneyRequestData;
 }
+
+export interface reduxFetchState {
+  accounts: string[];
+  categories: string[];
+  descriptions: string[];
+  incomeSources: string[];
+  payees: string[];
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null | undefined;
+}

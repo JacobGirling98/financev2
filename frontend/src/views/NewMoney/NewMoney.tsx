@@ -39,19 +39,10 @@ const NewMoney: React.FC = () => {
   ]);
   const [receipt, setReceipt] = useState<string>("");
 
-  const [accounts, setAccounts] = useState<string[]>([]);
-  const [descriptions, setDescriptions] = useState<string[]>([]);
-  const [incomeSource, setIncomeSource] = useState<string[]>([]);
-  const [payees, setPayees] = useState<string[]>([]);
-
-  const categoriesStatus = useAppSelector(state => state.categories.status);
-
   const [submitSpinner, setSubmitSpinner] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  useEffect(() => {
-    setFormOptions();
-  }, []);
+  const formOptionsStatus = useAppSelector(state => state.formOptions.status);
 
   useEffect(() => {
     resetTransactions();
@@ -64,16 +55,6 @@ const NewMoney: React.FC = () => {
     TRANSACTION_TYPES.personalTransfer,
     TRANSACTION_TYPES.income,
   ];
-
-  const setFormOptions = async () => {
-    const response: GetAllFormOptionsResponse = await axios.get(
-      FORM_OPTIONS_URL
-    );
-    setAccounts(response.data.accounts);
-    setDescriptions(response.data.descriptions);
-    setIncomeSource(response.data.incomeSource);
-    setPayees(response.data.payees);
-  };
 
   const handleTransactionChange = (
     index: number,
@@ -167,12 +148,7 @@ const NewMoney: React.FC = () => {
     setSubmitSpinner(false);
   };
 
-  const readyToRender =
-    accounts.length &&
-    categoriesStatus === "succeeded" &&
-    descriptions.length &&
-    incomeSource.length &&
-    payees.length;
+  const readyToRender = formOptionsStatus !== null;
 
   return (
     <>
@@ -206,13 +182,8 @@ const NewMoney: React.FC = () => {
                 <TransactionRow
                   index={index}
                   transaction={transaction}
-                  accounts={accounts}
-                  descriptions={descriptions}
-                  incomeSources={incomeSource}
-                  payees={payees}
                   handleTransactionChange={handleTransactionChange}
                   transactionType={transactionType}
-                  setDescriptions={setDescriptions}
                   removeRows={removeRows}
                   removeRowsDisabled={transactions.length === 1}
                 />

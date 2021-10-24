@@ -20,7 +20,7 @@ const CreatableSelectCmp: React.FC<CreatableSelectCmpProps> = props => {
   };
 
   const onCreateOption = (value: string): void => {
-    props.setDescriptions([...props.descriptions, value])
+    props.addOption(value);
     props.nestedOnChange(props.index, props.field, value);
   }
 

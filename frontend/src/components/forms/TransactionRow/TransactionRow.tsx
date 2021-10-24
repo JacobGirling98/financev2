@@ -9,12 +9,23 @@ import {
 } from "../../../utils/constants";
 import CreatableSelectCmp from "../../formComponents/CreatableSelectCmp";
 import CurrencyCmp from "../../formComponents/CurrencyCmp";
-import { useAppSelector } from "../../../hooks/redux";
-import { selectCategories } from "../../../stores/CategoriesSlice";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import { selectAccounts, selectCategories, selectDescriptions, selectIncomeSources, selectPayees } from "../../../stores/FormOptionsSlice";
+import { ADD_DESCRIPTION } from "../../../stores/actions";
 
 const TransactionRow: React.FC<TransactionRowProps> = props => {
 
+  const accounts = useAppSelector(selectAccounts);
   const categories = useAppSelector(selectCategories);
+  const descriptions = useAppSelector(selectDescriptions);
+  const incomeSources = useAppSelector(selectIncomeSources);
+  const payees = useAppSelector(selectPayees);
+  const dispatch = useAppDispatch();
+
+  
+  const addDescription = (value: string): void => {
+    dispatch(ADD_DESCRIPTION(value));
+  }
 
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>): void => {
     props.handleTransactionChange(
@@ -71,14 +82,6 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
         <label htmlFor={TRANSACTION_FIELDS.value} className="form-label">
           Value
         </label>
-        {/* <CurrencyFormat
-          className="form-control"
-          value={props.transaction.value}
-          prefix="£"
-          decimalScale={2}
-          fixedDecimalScale={true}
-          onValueChange={e => handleValueChange(e)}
-        /> */}
         <CurrencyCmp
           value={props.transaction.value}
           handleValueChange={handleValueChange}
@@ -95,7 +98,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           <SelectCmp
             index={props.index}
             field={TRANSACTION_FIELDS.destination}
-            options={props.payees}
+            options={payees}
             value={props.transaction.destination}
             id={TRANSACTION_FIELDS.destination}
             nestedOnChange={handleSelectChange}
@@ -114,7 +117,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
             <SelectCmp
               index={props.index}
               field={TRANSACTION_FIELDS.outboundAccount}
-              options={props.accounts}
+              options={accounts}
               value={props.transaction.outboundAccount}
               id={TRANSACTION_FIELDS.outboundAccount}
               nestedOnChange={handleSelectChange}
@@ -130,7 +133,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
             <SelectCmp
               index={props.index}
               field={TRANSACTION_FIELDS.inboundAccount}
-              options={props.accounts}
+              options={accounts}
               value={props.transaction.inboundAccount}
               id={TRANSACTION_FIELDS.inboundAccount}
               nestedOnChange={handleSelectChange}
@@ -146,7 +149,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
           <SelectCmp
             index={props.index}
             field={TRANSACTION_FIELDS.source}
-            options={props.incomeSources}
+            options={incomeSources}
             value={props.transaction.source}
             id={TRANSACTION_FIELDS.source}
             nestedOnChange={handleSelectChange}
@@ -176,12 +179,11 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
         <CreatableSelectCmp
           field="description"
           index={props.index}
-          options={props.descriptions}
+          options={descriptions}
           id={TRANSACTION_FIELDS.description}
           value={props.transaction.description}
           nestedOnChange={handleSelectChange}
-          descriptions={props.descriptions}
-          setDescriptions={props.setDescriptions}
+          addOption={addDescription}
         />
       </div>
       <div className="col-md-1">

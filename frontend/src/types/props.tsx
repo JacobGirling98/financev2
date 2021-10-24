@@ -23,8 +23,7 @@ export interface CreatableSelectCmpProps {
   options: string[];
   value: string;
   id: string;
-  descriptions: string[];
-  setDescriptions: (newDescriptions: string[]) => void;
+  addOption: (newDescription: string) => void;
   nestedOnChange: (
     index: number,
     field: string,
@@ -41,17 +40,12 @@ export interface CurrencyCmpProps {
 export interface TransactionRowProps {
   index: number;
   transaction: TYPES.Transaction;
-  accounts: string[];
-  descriptions: string[];
-  incomeSources: string[];
-  payees: string[];
   handleTransactionChange: (
     index: number,
     field: keyof TYPES.Transaction,
     value: string | boolean | number
   ) => void;
   transactionType: string;
-  setDescriptions: (newDescriptions: string[]) => void;
   removeRows: (event: MouseEvent<HTMLButtonElement>, index: number) => void;
   removeRowsDisabled: boolean;
 }

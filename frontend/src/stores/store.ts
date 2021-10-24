@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import categoriesReducer from "./CategoriesSlice";
+import formOptionsReducer from "./FormOptionsSlice";
 
 export const store = configureStore({
   reducer: {
-    categories: categoriesReducer
+    formOptions: formOptionsReducer
   }
 });
 
