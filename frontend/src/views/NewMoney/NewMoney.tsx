@@ -26,7 +26,7 @@ const NewMoney: React.FC = () => {
     {
       date: new Date().toISOString().split("T")[0],
       outgoing: true,
-      value: 0,
+      value: "",
       transactionType: "",
       outboundAccount: "",
       inboundAccount: "",
@@ -72,7 +72,7 @@ const NewMoney: React.FC = () => {
       {
         date: new Date().toISOString().split("T")[0],
         outgoing: true,
-        value: 0,
+        value: "",
         transactionType: "",
         outboundAccount: "",
         inboundAccount: "",
@@ -94,7 +94,7 @@ const NewMoney: React.FC = () => {
     let newTransaction: Transaction = {
       date: new Date().toISOString().split("T")[0],
       outgoing: true,
-      value: 0,
+      value: "",
       transactionType: "",
       outboundAccount: "",
       inboundAccount: "",

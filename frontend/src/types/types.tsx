@@ -6,7 +6,7 @@ export interface SelectOptions {
 export interface Transaction {
   date: string;
   outgoing: boolean;
-  value: number | undefined;
+  value: string;
   transactionType: string | undefined;
   outboundAccount: string;
   inboundAccount: string;

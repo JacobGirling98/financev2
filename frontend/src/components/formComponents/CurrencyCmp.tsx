@@ -14,6 +14,8 @@ const CurrencyCmp: React.FC<CurrencyCmpProps> = props => {
     }
   }
 
+  let value: string = props.value;
+
   return (
     <div className="input-group">
       <span className="input-group-text">£</span>
@@ -21,7 +23,7 @@ const CurrencyCmp: React.FC<CurrencyCmpProps> = props => {
         id="value"
         className={className}
         type="text"
-        value={props.value === 0 ? "" : props.value}
+        value={value}
         onChange={e => handleChange(e)}
       />
     </div>

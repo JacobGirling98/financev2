@@ -32,7 +32,7 @@ export interface CreatableSelectCmpProps {
 }
 
 export interface CurrencyCmpProps {
-  value: number | undefined;
+  value: string;
   className?: string;
   handleValueChange: (value: string) => void;
 }

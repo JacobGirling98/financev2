@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-bootstrap/modal";
+import { useAppSelector } from "../../hooks/redux";
+import { selectDescriptions } from "../../stores/FormOptionsSlice";
 import { Transaction } from "../../types/types";
 import { TRANSACTION_FIELDS, TRANSACTION_TYPES } from "../../utils/constants";
 import SelectCmp from "./SelectCmp";
@@ -19,6 +21,8 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
   const [date, setDate] = useState<string>("");
   const [transactionType, setTransactionType] = useState<string>("");
 
+  const descriptions = useAppSelector(selectDescriptions);
+
   const transactionTypes: string[] = [
     TRANSACTION_TYPES.credit,
     TRANSACTION_TYPES.debit
@@ -28,14 +32,14 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     return {
       date: date,
       outgoing: true,
-      value: 0,
+      value: "",
       transactionType: transactionType,
       outboundAccount: "",
       inboundAccount: "",
       destination: "",
       source: "",
       description: "",
-      category: "",
+      category: "Food",
       quantity: "",
     }
   }
@@ -45,6 +49,18 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     setDate("");
     setTransactionType("");
     setShowModal(false);
+  }
+
+  const findItem = (item: string) => {
+    const itemList: string[] = item.split(" ");
+
+    for (let existing of descriptions) {
+      for (let word of itemList) {
+        if (existing.includes(word)) {
+          console.log("Included!", existing, word);
+        }
+      }
+    }
   }
 
   const readReceipt = () => {
@@ -58,13 +74,14 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
 
     for (let line of lines) {
       if (isProduct) {
+        findItem(line);
         transaction.description = line;
         isProduct = false;
       } else if (isQuantity) {
         transaction.quantity = line;
         isQuantity = false;
       } else if (isPrice) {
-        transaction.value = parseFloat(line.substring(1));
+        transaction.value = line.substring(1);
         isPrice = false;
         transactions.push(transaction);
         transaction = resetTransaction();
