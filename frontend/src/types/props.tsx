@@ -18,13 +18,13 @@ export interface SelectCmpProps {
 
 export interface CreatableSelectCmpProps {
   className?: string;
-  index: number;
-  field: string;
+  index?: number;
+  field?: string;
   options: string[];
   value: string;
   id: string;
-  addOption: (newDescription: string) => void;
-  nestedOnChange: (
+  addOption?: (newDescription: string) => void;
+  nestedOnChange?: (
     index: number,
     field: string,
     value: string | boolean | number

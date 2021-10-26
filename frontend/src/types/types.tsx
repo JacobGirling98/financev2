@@ -23,6 +23,7 @@ export interface GetAllFormOptionsData {
   descriptions: string[];
   incomeSource: string[];
   payees: string[];
+  descriptionMappings: DescriptionMapping[];
 }
 
 export interface GetAllFormOptionsResponse {
@@ -50,12 +51,18 @@ export interface NewMoneyRequest {
   data: NewMoneyRequestData;
 }
 
-export interface reduxFetchState {
+export interface ReduxFetchState {
   accounts: string[];
   categories: string[];
   descriptions: string[];
   incomeSources: string[];
   payees: string[];
+  descriptionMappings: DescriptionMapping[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null | undefined;
+}
+
+export interface DescriptionMapping {
+  fullDescription: string;
+  shortDescription: string;
 }

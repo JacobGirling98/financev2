@@ -21,7 +21,7 @@ else:
 data_utils = DataUtils(data_path)
 new_money_helper = NewMoney(data_path)
 
-# new_money_helper.complete_standing_orders()
+new_money_helper.complete_standing_orders()
 
 
 @app.route("/form_options/", methods=['GET'])
@@ -47,7 +47,8 @@ def get_all_form_options() -> json:
         "categories": data_utils.get_data_as_list("categories"),
         "descriptions": data_utils.get_unique_descriptions(),
         "incomeSource": data_utils.get_data_as_list("income_source"),
-        "payees": data_utils.get_data_as_list("payees")
+        "payees": data_utils.get_data_as_list("payees"),
+        "descriptionMappings": data_utils.get_description_mappings()
     }
     return jsonify(response)
 

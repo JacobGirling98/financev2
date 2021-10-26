@@ -14,14 +14,16 @@ const CreatableSelectCmp: React.FC<CreatableSelectCmpProps> = props => {
   const className = props.className ? props.className : "form-Select";
 
   const onChange = (value: SingleValue<SelectOptions>): void => {
-    if (value) {
+    if (value && props.nestedOnChange && props.index && props.field) {
       props.nestedOnChange(props.index, props.field, value["value"]);
     }
   };
 
   const onCreateOption = (value: string): void => {
-    props.addOption(value);
-    props.nestedOnChange(props.index, props.field, value);
+    if (props.addOption && props.nestedOnChange && props.index && props.field) {
+      props.addOption(value);
+      props.nestedOnChange(props.index, props.field, value);
+    }
   }
 
   return (
