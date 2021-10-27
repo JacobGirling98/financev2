@@ -6,6 +6,7 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import {
+  DescriptionMapping,
   GetAllFormOptionsResponse,
   NewMoneyRequest,
   Transaction,
@@ -37,7 +38,6 @@ const NewMoney: React.FC = () => {
       quantity: "",
     },
   ]);
-  const [receipt, setReceipt] = useState<string>("");
 
   const [submitSpinner, setSubmitSpinner] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);

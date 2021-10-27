@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Modal from "react-bootstrap/modal";
-import { useAppSelector } from "../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import { ADD_DESCRIPTION } from "../../stores/actions";
 import {
   selectDescriptionMappings,
   selectDescriptions,
 } from "../../stores/FormOptionsSlice";
 import { DescriptionMapping, Transaction } from "../../types/types";
+import { DESCRIPTION_MAPPING_URL } from "../../utils/api-urls";
 import { TRANSACTION_FIELDS, TRANSACTION_TYPES } from "../../utils/constants";
 import CreatableSelectCmp from "./CreatableSelectCmp";
 import SelectCmp from "./SelectCmp";
+import axios from "axios";
 
 interface ModalProps {
   showModal: boolean;
@@ -24,18 +27,18 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
   const [receipt, setReceipt] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [transactionType, setTransactionType] = useState<string>("");
-  const [unknownMappings, setUnkownMappings] = useState<string[]>([]);
+  const [unknownMappings, setUnkownMappings] = useState<DescriptionMapping[]>([]);
   const [unknownMappingsIndex, setUnkownMappingsIndex] = useState<number>(0);
-  const [newMappings, setNewMappings] = useState<DescriptionMapping[]>([{fullDescription: "", shortDescription: ""}]);
 
   const descriptionMappings = useAppSelector(selectDescriptionMappings);
   const descriptions = useAppSelector(selectDescriptions);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    console.log(unknownMappings);
+  }, [unknownMappings]);
 
   let unknownMappingsTemp: string[] = [];
-
-  // useEffect(() => {
-  //   console.log(unknownMappings);
-  // }, [unknownMappings]);
 
   const transactionTypes: string[] = [
     TRANSACTION_TYPES.credit,
@@ -62,7 +65,9 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     setReceipt("");
     setDate("");
     setTransactionType("");
-    // setShowModal(false);
+    setUnkownMappings([]);
+    setUnkownMappingsIndex(0);
+    setShowModal(false);
   };
 
   const mapDescription = async (description: string): Promise<string> => {
@@ -96,17 +101,39 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
         transaction = resetTransaction();
       }
     }
-    setUnkownMappings(unknownMappingsTemp);
+    if (unknownMappingsTemp.length > 0) {
+      setUnkownMappings(unknownMappingsTemp.map(mapping => {
+        return {fullDescription: mapping, shortDescription: ""}
+      }));
+    } else {
+      resetState();
+    }
     // addTransactions(transactions);
   };
 
-  const handleNewMapping = (newDescription: string): void => {
-    let mappings: DescriptionMapping[] = newMappings;
-    mappings[unknownMappingsIndex].fullDescription = unknownMappings[unknownMappingsIndex]
-    mappings[unknownMappingsIndex].shortDescription = newDescription;
-    mappings.push({fullDescription: "", shortDescription: ""});
-    setNewMappings(mappings);
+  const handleNewMapping = (): void => {
     setUnkownMappingsIndex(unknownMappingsIndex + 1);
+  }
+
+  const handleSelectChange = (
+    value: string
+  ): void => {
+    let mappings: DescriptionMapping[] = [...unknownMappings];
+    mappings[unknownMappingsIndex].shortDescription = value;
+    console.log(mappings[unknownMappingsIndex].shortDescription);
+    
+    setUnkownMappings(mappings);
+  };
+
+  const handleSubmit = async () => {
+    console.log("submitting");
+    let res = await axios.post(DESCRIPTION_MAPPING_URL, { unknownMappings });
+    console.log(res);
+    resetState();
+  };
+
+  const addDescription = (value: string): void => {
+    dispatch(ADD_DESCRIPTION(value));
   }
 
   return (
@@ -170,7 +197,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
                 disabled
                 className="form-control"
                 id="fullDescription"
-                value={unknownMappings[unknownMappingsIndex]}
+                value={unknownMappings[unknownMappingsIndex].fullDescription}
               />
             </div>
             <div className="col-md">
@@ -180,9 +207,9 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
               <CreatableSelectCmp
                 options={descriptions}
                 id="newDescription"
-                value={newMappings[unknownMappingsIndex].shortDescription}
-                // nestedOnChange={handleSelectChange}
-                // addOption={addDescription}
+                value={unknownMappings[unknownMappingsIndex].shortDescription}
+                onChange={handleSelectChange}
+                addOption={addDescription}
               />
             </div>
           </div>
@@ -207,7 +234,6 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
             className="btn btn-success"
             onClick={e => {
               readReceipt();
-              resetState();
             }}
           >
             Upload Waitrose
@@ -233,14 +259,30 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
           >
             Back
           </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={unknownMappingsIndex === unknownMappings.length - 1}
-            onClick={e => handleNewMapping(e.currentTarget.value)}
-          >
-            Next
-          </button>
+          {unknownMappingsIndex < unknownMappings.length - 1 &&
+          <>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={unknownMappings[unknownMappingsIndex].shortDescription === ""}
+              onClick={() => handleNewMapping()}
+            >
+              Next
+            </button>
+          </>
+          }
+          {unknownMappingsIndex === unknownMappings.length - 1 &&
+          <>
+            <button
+              type="button"
+              className="btn btn-success"
+              disabled={unknownMappings[unknownMappingsIndex].shortDescription === ""}
+              onClick={() => handleSubmit()}
+            >
+              Submit
+            </button>
+          </>
+          }
         </>
         }
       </Modal.Footer>
