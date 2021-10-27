@@ -24,9 +24,8 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
   const [receipt, setReceipt] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [transactionType, setTransactionType] = useState<string>("");
-  const [unknownMappings, setUnkownMappings] = useState<string[]>([]);
+  const [unknownMappings, setUnkownMappings] = useState<DescriptionMapping[]>([]);
   const [unknownMappingsIndex, setUnkownMappingsIndex] = useState<number>(0);
-  const [newMappings, setNewMappings] = useState<DescriptionMapping[]>([{fullDescription: "", shortDescription: ""}]);
 
   const descriptionMappings = useAppSelector(selectDescriptionMappings);
   const descriptions = useAppSelector(selectDescriptions);
@@ -96,16 +95,17 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
         transaction = resetTransaction();
       }
     }
-    setUnkownMappings(unknownMappingsTemp);
+    setUnkownMappings(unknownMappingsTemp.map(mapping => {
+      return {fullDescription: mapping, shortDescription: ""}}
+    ));
     // addTransactions(transactions);
   };
 
   const handleNewMapping = (newDescription: string): void => {
-    let mappings: DescriptionMapping[] = newMappings;
-    mappings[unknownMappingsIndex].fullDescription = unknownMappings[unknownMappingsIndex]
+    let mappings: DescriptionMapping[] = unknownMappings;
     mappings[unknownMappingsIndex].shortDescription = newDescription;
     mappings.push({fullDescription: "", shortDescription: ""});
-    setNewMappings(mappings);
+    setUnkownMappings(mappings);
     setUnkownMappingsIndex(unknownMappingsIndex + 1);
   }
 
@@ -170,7 +170,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
                 disabled
                 className="form-control"
                 id="fullDescription"
-                value={unknownMappings[unknownMappingsIndex]}
+                value={unknownMappings[unknownMappingsIndex].fullDescription}
               />
             </div>
             <div className="col-md">
@@ -180,7 +180,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
               <CreatableSelectCmp
                 options={descriptions}
                 id="newDescription"
-                value={newMappings[unknownMappingsIndex].shortDescription}
+                value={unknownMappings[unknownMappingsIndex].shortDescription}
                 // nestedOnChange={handleSelectChange}
                 // addOption={addDescription}
               />
