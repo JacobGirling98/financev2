@@ -21,7 +21,8 @@ else:
 data_utils = DataUtils(data_path)
 new_money_helper = NewMoney(data_path)
 
-new_money_helper.complete_standing_orders()
+if os.getenv("SYSTEM") != "MAC":
+    new_money_helper.complete_standing_orders()
 
 
 @app.route("/form_options/", methods=['GET'])
