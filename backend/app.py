@@ -53,6 +53,15 @@ def get_all_form_options() -> json:
     }
     return jsonify(response)
 
+@app.route("/description_mappings", methods=['POST'])
+def new_description_mappings():
+    """
+    Adds new description mappings to description mappings file
+    """
+    new: dict = json.loads(request.data)["unknownMappings"]
+    data_utils.save_description_mappings(new)
+    return "Description mappings successfully added"
+
 
 @app.route("/new_money", methods=['POST'])
 def new_transaction():

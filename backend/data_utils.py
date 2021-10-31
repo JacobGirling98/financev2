@@ -36,6 +36,15 @@ class DataUtils:
             data: list = json.loads(file.read())
         return data
 
+    def save_description_mappings(self, new_mappings: list) -> None:
+        """
+        Takes new mappings and adds to existing mappings file
+        """
+        existing = self.get_description_mappings()
+        combined = existing + new_mappings
+        with open(f"{self.data_path}/description_mappings.json", "w") as file:
+            file.write(json.dumps(combined))
+
 # utils = Utils("data/prod")
 # cats = utils.get_data_as_list("categories")
 # print(cats)
