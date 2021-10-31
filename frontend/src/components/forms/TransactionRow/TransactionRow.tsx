@@ -37,7 +37,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
 
   const handleSelectChange = (
     index: number,
-    field: string,
+    field: string | undefined,
     value: string | boolean | number
   ): void => {
     props.handleTransactionChange(index, field as keyof Transaction, value);

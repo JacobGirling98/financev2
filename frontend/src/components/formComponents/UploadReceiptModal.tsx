@@ -70,10 +70,11 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     setShowModal(false);
   };
 
-  const mapDescription = async (description: string): Promise<string> => {
+  const mapDescription = (description: string): string => {
     const foundMapping = descriptionMappings.filter(
       mapping => mapping.fullDescription === description
     );
+    console.log(foundMapping);
     if (foundMapping.length > 0) {
       return foundMapping[0].shortDescription;
     }
@@ -81,7 +82,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     return description;
   };
 
-  const readReceipt = async () => {
+  const readReceipt = () => {
     const lines = receipt.valueOf().split("\n");
 
     let transactions: Transaction[] = [];
@@ -90,7 +91,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     for (let i = 0; i < lines.length; i++) {
       if (lines[i] === "Product Name") {
         i++;
-        transaction.description = await mapDescription(lines[i]);
+        transaction.description = mapDescription(lines[i]);
       } else if (lines[i] === "Qty:") {
         i++;
         transaction.quantity = lines[i];
@@ -101,6 +102,9 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
         transaction = resetTransaction();
       }
     }
+    console.log(transactions);
+    
+    console.log(unknownMappingsTemp);
     if (unknownMappingsTemp.length > 0) {
       setUnkownMappings(unknownMappingsTemp.map(mapping => {
         return {fullDescription: mapping, shortDescription: ""}

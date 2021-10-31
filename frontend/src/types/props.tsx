@@ -27,7 +27,7 @@ export interface CreatableSelectCmpProps {
   onChange?: (value: string) => void;
   nestedOnChange?: (
     index: number,
-    field: string,
+    field: string | undefined,
     value: string | boolean | number
   ) => void;
 }
