@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { GetAllFormOptionsResponse, ReduxFetchState } from "../types/types";
+import { DescriptionMapping, GetAllFormOptionsResponse, ReduxFetchState } from "../types/types";
 import type { RootState } from "./store";
 import axios from "axios";
 import { FORM_OPTIONS_URL } from "../utils/api-urls";
@@ -29,6 +29,9 @@ export const formOptions = createSlice({
   reducers: {
     addDescription: (state, action: PayloadAction<string>) => {
       state.descriptions.push(action.payload);
+    },
+    addDescriptionMappings: (state, action: PayloadAction<DescriptionMapping[]>) => {
+      state.descriptionMappings = state.descriptionMappings.concat(action.payload);
     }
   },
   extraReducers: (builder) => {
@@ -52,7 +55,7 @@ export const formOptions = createSlice({
 })
 
 export default formOptions.reducer;
-export const { addDescription } = formOptions.actions;
+export const { addDescription, addDescriptionMappings } = formOptions.actions;
 export const selectAccounts = (state: RootState) => state.formOptions.accounts;
 export const selectCategories = (state: RootState) => state.formOptions.categories;
 export const selectDescriptions = (state: RootState) => state.formOptions.descriptions;

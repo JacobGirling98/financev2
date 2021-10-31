@@ -141,9 +141,7 @@ const NewMoney: React.FC = () => {
       }
     });
     setTransactions(localTransactions);
-    console.log({ transactions });
     let res = await axios.post(NEW_MONEY_URL, { transactions });
-    console.log(res);
     resetTransactions();
     setSubmitSpinner(false);
   };

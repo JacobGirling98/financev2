@@ -3,6 +3,7 @@ import Modal from "react-bootstrap/modal";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { ADD_DESCRIPTION } from "../../stores/actions";
 import {
+  addDescriptionMappings,
   selectDescriptionMappings,
   selectDescriptions,
 } from "../../stores/FormOptionsSlice";
@@ -19,6 +20,11 @@ interface ModalProps {
   addTransactions: (transactions: Transaction[]) => void;
 }
 
+interface readReceiptReturn {
+  localTransactions: Transaction[];
+  unknowns: String[];
+}
+
 const UploadReceiptModal: React.FC<ModalProps> = ({
   showModal,
   setShowModal,
@@ -29,14 +35,11 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
   const [transactionType, setTransactionType] = useState<string>("");
   const [unknownMappings, setUnkownMappings] = useState<DescriptionMapping[]>([]);
   const [unknownMappingsIndex, setUnkownMappingsIndex] = useState<number>(0);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const descriptionMappings = useAppSelector(selectDescriptionMappings);
   const descriptions = useAppSelector(selectDescriptions);
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    console.log(unknownMappings);
-  }, [unknownMappings]);
 
   let unknownMappingsTemp: string[] = [];
 
@@ -67,6 +70,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     setTransactionType("");
     setUnkownMappings([]);
     setUnkownMappingsIndex(0);
+    setTransactions([]);
     setShowModal(false);
   };
 
@@ -74,7 +78,6 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     const foundMapping = descriptionMappings.filter(
       mapping => mapping.fullDescription === description
     );
-    console.log(foundMapping);
     if (foundMapping.length > 0) {
       return foundMapping[0].shortDescription;
     }
@@ -82,11 +85,11 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     return description;
   };
 
-  const readReceipt = () => {
+  const readReceipt = (): readReceiptReturn => {
     const lines = receipt.valueOf().split("\n");
 
-    let transactions: Transaction[] = [];
     let transaction: Transaction = resetTransaction();
+    let localTransactions: Transaction[] = [];
 
     for (let i = 0; i < lines.length; i++) {
       if (lines[i] === "Product Name") {
@@ -98,21 +101,19 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
       } else if (lines[i] === "Cost:") {
         i++;
         transaction.value = lines[i].substring(1);
-        transactions.push(transaction);
+        localTransactions.push(transaction);
         transaction = resetTransaction();
       }
     }
-    console.log(transactions);
-    
-    console.log(unknownMappingsTemp);
     if (unknownMappingsTemp.length > 0) {
       setUnkownMappings(unknownMappingsTemp.map(mapping => {
         return {fullDescription: mapping, shortDescription: ""}
       }));
-    } else {
-      resetState();
     }
-    // addTransactions(transactions);
+    return {
+      localTransactions,
+      unknowns: unknownMappingsTemp
+    };
   };
 
   const handleNewMapping = (): void => {
@@ -124,20 +125,41 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
   ): void => {
     let mappings: DescriptionMapping[] = [...unknownMappings];
     mappings[unknownMappingsIndex].shortDescription = value;
-    console.log(mappings[unknownMappingsIndex].shortDescription);
-    
     setUnkownMappings(mappings);
   };
 
-  const handleSubmit = async () => {
-    console.log("submitting");
+  const handleUpload = () => {
+    const {localTransactions, unknowns } = readReceipt();
+    if (unknowns.length === 0) {
+      const updatedTransactions = updateTransactions(localTransactions);
+      addTransactions(updatedTransactions);
+      resetState();
+    } else {
+      setTransactions(localTransactions);
+    }
+  }
+
+  const handleNewMappingsSubmit = async () => {
     let res = await axios.post(DESCRIPTION_MAPPING_URL, { unknownMappings });
-    console.log(res);
+    const updatedTransactions = updateTransactions(transactions);
+    dispatch(addDescriptionMappings(unknownMappings));
+    addTransactions(updatedTransactions);
     resetState();
   };
 
   const addDescription = (value: string): void => {
     dispatch(ADD_DESCRIPTION(value));
+  }
+
+  const updateTransactions = (oldTransactions: Transaction[]): Transaction[] => {
+    const localMappings: DescriptionMapping[] = [...descriptionMappings, ...unknownMappings];
+    oldTransactions.forEach(transaction => {
+      let matchingDescription = localMappings.filter(mapping => mapping.fullDescription === transaction.description);
+      if (matchingDescription.length > 0) {
+        transaction.description = matchingDescription[0].shortDescription;
+      }
+    });
+    return oldTransactions;
   }
 
   return (
@@ -225,7 +247,6 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
           type="button"
           className="btn btn-secondary"
           onClick={e => {
-            setReceipt("");
             resetState();
           }}
         >
@@ -237,7 +258,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
             type="button"
             className="btn btn-success"
             onClick={e => {
-              readReceipt();
+              handleUpload();
             }}
           >
             Upload Waitrose
@@ -281,7 +302,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
               type="button"
               className="btn btn-success"
               disabled={unknownMappings[unknownMappingsIndex].shortDescription === ""}
-              onClick={() => handleSubmit()}
+              onClick={() => handleNewMappingsSubmit()}
             >
               Submit
             </button>

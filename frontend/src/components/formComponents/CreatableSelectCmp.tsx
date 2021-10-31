@@ -14,10 +14,7 @@ const CreatableSelectCmp: React.FC<CreatableSelectCmpProps> = props => {
   const className = props.className ? props.className : "form-Select";
 
   const onChange = (value: SingleValue<SelectOptions>): void => {
-    console.log("on change");
-    if (props.nestedOnChange && props.index && value) {
-      console.log("nested");
-      
+   if (props.nestedOnChange && props.index != null && value) {
       props.nestedOnChange(props.index, props.field, value["value"]);
     } else if (value && props.onChange) {
       props.onChange(value["value"])
