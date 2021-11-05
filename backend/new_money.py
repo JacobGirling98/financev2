@@ -52,7 +52,9 @@ class NewMoney:
         try:
             print(transactions)
             df = pd.DataFrame(transactions)
-            print(df)
+            print("Adding transactions:")
+            for i, row in df.iterrows():
+                print(row["description"], row["value"])
             df.to_csv(self.csv_path, mode="a", index=False, header=False)
             res = "Items successfully added"
         except Exception as e:

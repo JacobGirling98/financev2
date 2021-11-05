@@ -1,9 +1,7 @@
 import shutil
 import os
 
-print(os.getcwd())
-
-if os.getcwd()[-7:] == "data":
+if os.getcwd()[-4:] == "data":
     root = os.getcwd()[:-4]
 else:
     root = os.getcwd()
