@@ -32,3 +32,14 @@ def test_last_day_of_month():
     assert ViewMoney.last_day_of_month(date(2020, 12, 5)) == date(2020, 12, 31)
 
 
+def test_prev_financial_year():
+    assert ViewMoney.prev_financial_year(date(2020, 5, 1)) == date(2020, 4, 15)
+    assert ViewMoney.prev_financial_year(date(2020, 12, 1)) == date(2020, 4, 15)
+    assert ViewMoney.prev_financial_year(date(2020, 2, 1)) == date(2019, 4, 15)
+
+
+def test_next_financial_year():
+    assert ViewMoney.next_financial_year(date(2020, 5, 1)) == date(2021, 4, 15)
+    assert ViewMoney.next_financial_year(date(2020, 12, 1)) == date(2021, 4, 15)
+    assert ViewMoney.next_financial_year(date(2020, 2, 1)) == date(2020, 4, 15)
+    assert ViewMoney.next_financial_year(date(2020, 4, 13)) == date(2021, 4, 15)

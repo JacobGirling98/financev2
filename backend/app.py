@@ -3,8 +3,9 @@ import os
 from flask import Flask, json, jsonify, request
 from flask_cors import CORS
 
-from backend.src.new_money import NewMoney
 from backend.src.data_utils import DataUtils
+from backend.src.new_money import NewMoney
+from backend.src.view_money import ViewMoney
 
 app = Flask(__name__)
 CORS(app)
@@ -20,6 +21,7 @@ else:
 
 data_utils = DataUtils(data_path)
 new_money_helper = NewMoney(data_path)
+view_money_helper = ViewMoney(data_path)
 
 if os.getenv("SYSTEM") != "MAC":
     new_money_helper.complete_standing_orders()
@@ -32,8 +34,8 @@ def get_form_options() -> json:
   """
     data_type: str = request.args.get('dataType')
     response = {
-        "data": data_utils.get_unique_descriptions() if data_type == "descriptions" else data_utils.get_data_as_list(
-            data_type)
+        "data": view_money_helper.get_unique_descriptions() if data_type == "descriptions" else
+        data_utils.get_data_as_list(data_type)
     }
     return jsonify(response)
 
@@ -52,6 +54,7 @@ def get_all_form_options() -> json:
         "descriptionMappings": data_utils.get_description_mappings()
     }
     return jsonify(response)
+
 
 @app.route("/description_mappings", methods=['POST'])
 def new_description_mappings():
@@ -72,6 +75,20 @@ def new_transaction():
     transactions: dict = new_money_helper.convert_to_dict(data["transactions"])
     typed_transactions: dict = new_money_helper.convert_data_types(transactions)
     return new_money_helper.save_transactions(typed_transactions)
+
+
+@app.route("/view_money/date_ranges", methods=["GET"])
+def date_ranges() -> json:
+    """
+    Returns list of months, financial months, years and financial years dynamically from data
+    """
+    response = {
+        "months": view_money_helper.get_months(),
+        "financial_months": view_money_helper.get_financial_months(),
+        "years": view_money_helper.get_years(),
+        "financial_years": view_money_helper.get_financial_years()
+    }
+    return jsonify(response)
 
 
 if __name__ == "__main__":

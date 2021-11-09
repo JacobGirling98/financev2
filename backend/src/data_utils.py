@@ -18,15 +18,6 @@ class DataUtils:
         data.sort()
         return data
 
-    def get_unique_descriptions(self) -> list:
-        """
-        Reads data file and extracts unique descriptions to list
-        """
-        data = ["" if isinstance(x, float) and np.isnan(x) else x for x in self.data["description"].unique().tolist()]
-        data = [x for x in data if x]
-        data.sort()
-        return data
-
     def get_description_mappings(self) -> list:
         """
         Reads description mappings from text file and returns as dict
