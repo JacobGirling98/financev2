@@ -48,7 +48,7 @@ def get_all_form_options() -> json:
     response = {
         "accounts": data_utils.get_data_as_list("accounts"),
         "categories": data_utils.get_data_as_list("categories"),
-        "descriptions": data_utils.get_unique_descriptions(),
+        "descriptions": view_money_helper.get_unique_descriptions(),
         "incomeSource": data_utils.get_data_as_list("income_source"),
         "payees": data_utils.get_data_as_list("payees"),
         "descriptionMappings": data_utils.get_description_mappings()

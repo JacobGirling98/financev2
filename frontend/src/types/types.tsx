@@ -66,3 +66,20 @@ export interface DescriptionMapping {
   fullDescription: string;
   shortDescription: string;
 }
+
+export interface DateRange {
+  start: Date;
+  end: Date;
+  id: number;
+}
+
+export interface DateRangesData {
+  financial_months: DateRange[];
+  months: DateRange[];
+  years: DateRange[];
+  financial_years: DateRange[];
+}
+
+export interface DateRangesResponse {
+  data: DateRangesData
+}
