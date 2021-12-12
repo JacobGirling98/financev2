@@ -25,6 +25,11 @@ interface readReceiptReturn {
   unknowns: String[];
 }
 
+enum Supermarket {
+  WAITROSE,
+  SAINSBURYS
+}
+
 const UploadReceiptModal: React.FC<ModalProps> = ({
   showModal,
   setShowModal,
@@ -85,9 +90,23 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     return description;
   };
 
-  const readReceipt = (): readReceiptReturn => {
+  const readReceipt = (source: Supermarket): readReceiptReturn => {
     const lines = receipt.valueOf().split("\n");
 
+    let localTransactions: Transaction [] = source === Supermarket.WAITROSE ? readWaitroseReceipt(lines) : readSainsburysReceipt(lines)
+
+    if (unknownMappingsTemp.length > 0) {
+      setUnkownMappings(unknownMappingsTemp.map(mapping => {
+        return {fullDescription: mapping, shortDescription: ""}
+      }));
+    }
+    return {
+      localTransactions,
+      unknowns: unknownMappingsTemp
+    };
+  };
+
+  const readWaitroseReceipt = (lines: string[]): Transaction[]  => {
     let transaction: Transaction = resetTransaction();
     let localTransactions: Transaction[] = [];
 
@@ -105,16 +124,52 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
         transaction = resetTransaction();
       }
     }
-    if (unknownMappingsTemp.length > 0) {
-      setUnkownMappings(unknownMappingsTemp.map(mapping => {
-        return {fullDescription: mapping, shortDescription: ""}
-      }));
+    return localTransactions;
+  }
+
+  const readSainsburysReceipt = (lines: string[]): Transaction[] => {
+    let localTransactions: Transaction[] = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      let transaction: Transaction = resetTransaction();
+      const line = lines[i].split(" ")
+      const finalIndex = line.length - 1;
+      const quantity = parseQuantity(line[0])
+      
+      if (quantity) {
+        transaction.quantity = quantity
+        if (isValue(line[finalIndex])) {
+          transaction.value = line[finalIndex].substring(1)
+          transaction.description = mapDescription(line.splice(1, finalIndex - 1).join(" "))
+        } else {
+          i++
+          const nextLine = lines[i].split(" ")
+          transaction.value = nextLine[nextLine.length - 1].substring(1)
+          const combinedLine = line.concat(nextLine)
+          transaction.description = mapDescription(combinedLine.splice(1, combinedLine.length - 2).join(" "))
+        }
+        localTransactions.push(transaction)
+      }
     }
-    return {
-      localTransactions,
-      unknowns: unknownMappingsTemp
-    };
-  };
+    return localTransactions
+  }
+
+  const parseQuantity = (rawQuantity: string): string => {
+    let quantity: number
+    if (rawQuantity.substring(rawQuantity.length - 1) === "g" || rawQuantity.substring(rawQuantity.length - 2) === "kg") {
+      quantity = 1
+    } else {
+      quantity = parseInt(rawQuantity)
+      if (isNaN(quantity)) {
+        quantity = 0
+      }
+    }
+    return quantity.toString()
+  }
+
+  const isValue = (value: string): boolean => {
+    return value[0] === "£"
+  }
 
   const handleNewMapping = (): void => {
     setUnkownMappingsIndex(unknownMappingsIndex + 1);
@@ -128,8 +183,8 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     setUnkownMappings(mappings);
   };
 
-  const handleUpload = () => {
-    const {localTransactions, unknowns } = readReceipt();
+  const handleUpload = (source: Supermarket) => {
+    const {localTransactions, unknowns } = readReceipt(source);
     if (unknowns.length === 0) {
       const updatedTransactions = updateTransactions(localTransactions);
       addTransactions(updatedTransactions);
@@ -258,7 +313,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
             type="button"
             className="btn btn-success"
             onClick={e => {
-              handleUpload();
+              handleUpload(Supermarket.WAITROSE);
             }}
           >
             Upload Waitrose
@@ -267,7 +322,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
             type="button"
             className="btn btn-sainsburys"
             onClick={e => {
-              resetState();
+              handleUpload(Supermarket.SAINSBURYS);
             }}
           >
             Upload Sainsbury's

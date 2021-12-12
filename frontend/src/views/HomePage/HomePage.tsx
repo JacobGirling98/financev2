@@ -35,6 +35,14 @@ const HomePage: React.FC = () => {
             </li>
           </ul>
         </div>
+        <div className="collapse navbar-collapse justify-content-end">
+          <button
+            className="btn btn-primary"
+            type="button"
+          >
+            Sync Data
+          </button>
+        </div>
       </nav>
       <BrowserRouter>
         <Routes />

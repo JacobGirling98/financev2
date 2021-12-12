@@ -5,8 +5,7 @@ from dateutil.relativedelta import relativedelta
 from pandas import Timestamp
 import numpy as np
 
-from backend.src.date_range import DateRange
-
+from .date_range import DateRange
 
 class ViewMoney:
 

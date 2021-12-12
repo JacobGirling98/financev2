@@ -3,9 +3,9 @@ import os
 from flask import Flask, json, jsonify, request
 from flask_cors import CORS
 
-from backend.src.data_utils import DataUtils
-from backend.src.new_money import NewMoney
-from backend.src.view_money import ViewMoney
+from src.data_utils import DataUtils
+from src.new_money import NewMoney
+from src.view_money import ViewMoney
 
 app = Flask(__name__)
 CORS(app)
