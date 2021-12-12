@@ -10,14 +10,11 @@ from backend.src.view_money import ViewMoney
 app = Flask(__name__)
 CORS(app)
 
-if os.getcwd()[-7:] == "backend":
-    root = os.getcwd()[:-7]
-else:
-    root = os.getcwd()
+data_path = os.getenv("DATA_PATH")
 if os.getenv('API_ENV') == 'prod':
-    data_path = f"{root}/data/prod"
+    data_path = f"{data_path}/prod"
 else:
-    data_path = f"{root}/data/dev"
+    data_path = f"{data_path}/dev"
 
 data_utils = DataUtils(data_path)
 new_money_helper = NewMoney(data_path)
