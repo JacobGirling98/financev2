@@ -99,9 +99,12 @@ def sync_data() -> json:
     """
     repo = Repo(data_repo)
     repo.git.add(".")
-    repo.git.commit(f"-m {str(datetime.datetime.now())}")
-    repo.git.pull()
-    repo.git.push()
+    if repo.index.diff("HEAD"):
+        repo.git.commit(f"-m {str(datetime.datetime.now())}")
+        repo.git.pull()
+        repo.git.push()
+    else:
+        repo.git.pull()
     return jsonify({'data': 'synced'})
 
 
