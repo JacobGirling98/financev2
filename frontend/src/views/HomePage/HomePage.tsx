@@ -1,9 +1,22 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import Routes from "../../Routes";
 import "./HomePage.scss";
+import { BASE_URL } from "../../utils/api-urls";
+import Spinner from "../../components/Spinner";
 
 const HomePage: React.FC = () => {
+  
+  const [loading, setLoading] = useState<Boolean>(false);
+
+  const handleSyncData = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setLoading(true)
+    await axios.get(`${BASE_URL}sync_data`)
+    setLoading(false)
+  }
+  
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -39,6 +52,7 @@ const HomePage: React.FC = () => {
           <button
             className="btn btn-primary"
             type="button"
+            onClick={handleSyncData}
           >
             Sync Data
           </button>
@@ -47,6 +61,7 @@ const HomePage: React.FC = () => {
       <BrowserRouter>
         <Routes />
       </BrowserRouter>
+      {loading && <Spinner />}
     </>
   );
 };

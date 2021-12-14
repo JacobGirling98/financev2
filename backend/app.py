@@ -1,7 +1,11 @@
+import datetime
 import os
+import subprocess
+from time import time
 
 from flask import Flask, json, jsonify, request
 from flask_cors import CORS
+from git import Repo
 
 from src.data_utils import DataUtils
 from src.new_money import NewMoney
@@ -10,11 +14,11 @@ from src.view_money import ViewMoney
 app = Flask(__name__)
 CORS(app)
 
-data_path = os.getenv("DATA_PATH")
+data_repo = os.getenv("DATA_PATH")
 if os.getenv('API_ENV') == 'prod':
-    data_path = f"{data_path}/prod"
+    data_path = f"{data_repo}/prod"
 else:
-    data_path = f"{data_path}/dev"
+    data_path = f"{data_repo}/dev"
 
 data_utils = DataUtils(data_path)
 new_money_helper = NewMoney(data_path)
@@ -86,6 +90,19 @@ def date_ranges() -> json:
         "financial_years": view_money_helper.get_financial_years()
     }
     return jsonify(response)
+
+
+@app.route("/sync_data", methods=['GET'])
+def sync_data() -> json:
+    """
+    Pushes transaction data to repository
+    """
+    repo = Repo(data_repo)
+    repo.git.add(".")
+    repo.git.commit(f"-m {str(datetime.datetime.now())}")
+    repo.git.pull()
+    repo.git.push()
+    return jsonify({'data': 'synced'})
 
 
 if __name__ == "__main__":
