@@ -9,11 +9,6 @@ from .date_range import DateRange
 
 class ViewMoney:
 
-    months: list[DateRange]
-    financial_months: list[DateRange]
-    years: list[DateRange]
-    financial_years: list[DateRange]
-
     def __init__(self, data_path: str):
         self.csv_path: str = f"{data_path}/data.csv"
         self.df: pd.DataFrame = pd.read_csv(self.csv_path, parse_dates=["date"])
@@ -75,9 +70,7 @@ class ViewMoney:
             current_date += relativedelta(months=1)
             _id += 1
 
-        self.months = dates
-
-        return dates
+        return self.sort_dates(dates)
 
     def get_financial_months(self) -> list[DateRange]:
         incomes: list[date] = [ViewMoney.timestamp_to_date(x) for x in
@@ -93,9 +86,7 @@ class ViewMoney:
         for i in range(len(incomes) - 1):
             dates.append(DateRange(incomes[i], incomes[i + 1], i))
 
-        self.financial_months = dates
-
-        return dates
+        return self.sort_dates(dates)
 
     def get_years(self) -> list[DateRange]:
         first_transaction: date = ViewMoney.timestamp_to_date(self.df.iloc[0]["date"])
@@ -114,9 +105,7 @@ class ViewMoney:
             current_date += relativedelta(years=1)
             _id += 1
 
-        self.years = dates
-
-        return dates
+        return self.sort_dates(dates)
 
     def get_financial_years(self) -> list[DateRange]:
         first_date: date = ViewMoney.timestamp_to_date(self.df[(self.df["category"] == "Wages")].iloc[0]["date"])
@@ -136,9 +125,11 @@ class ViewMoney:
             current_date = ViewMoney.next_financial_year(current_date)
             _id += 1
 
-        self.financial_years = dates
+        return self.sort_dates(dates)
 
-        return dates
+    @staticmethod
+    def sort_dates(dates: list[DateRange]) -> list[DateRange]:
+        return sorted(dates, reverse=True, key=lambda d: d.start)
 
     # def spending(self, start_date: date, end_date: date) -> pd.DataFrame:
     #     return self.df[(self.df[])]

@@ -19,9 +19,9 @@ const timePeriods: TimePeriod[] = [
 
 const ViewMoney: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<string>("Financial Months");
-  const [dateRanges, setDateRanges] = useState<DateRangesData>();
-  const [selectedDateRanges, setSelectedDateRanges] = useState<DateRange[]>([]);
-  const [dateRange, setDateRange] = useState<DateRange>();
+  const [dateRanges, setDateRanges] = useState<DateRangesData>(); // all data ranges
+  const [selectedDateRanges, setSelectedDateRanges] = useState<DateRange[]>([]); // chosen date range based on time period
+  const [dateRange, setDateRange] = useState<DateRange>(); // chosen date range from selectedDateRanges
 
   useEffect(() => {
     const getDateRanges = async () => {
@@ -58,9 +58,9 @@ const ViewMoney: React.FC = () => {
     }
   }, [timePeriod, dateRanges])
 
-  // useEffect(() => {
-  //   console.log(selectedDateRanges);
-  // }, [selectedDateRanges]);
+  useEffect(() => {
+    setDateRange(selectedDateRanges[0]);
+  }, [selectedDateRanges]);
 
   const handleTimePeriodChange = (label: string): void => {
     const newPeriod: string | undefined = getTimePeriodValue(label);
@@ -79,11 +79,21 @@ const ViewMoney: React.FC = () => {
     return `${splitDate[1]} ${splitDate[2]} ${year}`;
   }
 
-  const mapDateRangeToString = (dateRange: DateRange): string => {
-    return `${formatDateString(dateRange.start)} - ${formatDateString(dateRange.end)}`;
+  const mapDateRangeToString = (dateRange: DateRange | undefined): string => {
+    return dateRange ? `${formatDateString(dateRange.start)} - ${formatDateString(dateRange.end)}` : "";
   }
 
-  const readyToRender: boolean = selectedDateRanges !== null;
+  const handleDateRangeChange = (label: string): void => {
+    const newDateRange: DateRange | undefined = getDateRange(label);
+    if (newDateRange) 
+      setDateRange(newDateRange);
+  }
+
+  const getDateRange = (label: string): DateRange | undefined => {
+    return selectedDateRanges.find(range => mapDateRangeToString(range) === label);
+  }
+
+  const readyToRender: boolean = dateRange !== null;
 
   return (
     <>
@@ -104,13 +114,11 @@ const ViewMoney: React.FC = () => {
               <SelectCmp
                 className="form-Select"
                 options={selectedDateRanges.map(val => {
-                  console.log(val);
-
                   return mapDateRangeToString(val);
                 })}
                 id="dates"
-                value={timePeriod}
-                onChange={e => handleTimePeriodChange(e)}
+                value={mapDateRangeToString(dateRange)}
+                onChange={e => handleDateRangeChange(e)}
               />
             </div>
           </div>
