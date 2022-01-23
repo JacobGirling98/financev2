@@ -106,6 +106,14 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
     };
   };
 
+  const getCost = (cost: string): string => {
+    if (cost.includes("£")) {
+      return cost.substring(1);
+    } else {
+      return `0.${cost.substring(0, cost.length - 1)}`;
+    }
+  }
+
   const readWaitroseReceipt = (lines: string[]): Transaction[]  => {
     let transaction: Transaction = resetTransaction();
     let localTransactions: Transaction[] = [];
@@ -116,10 +124,9 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
         transaction.description = mapDescription(lines[i]);
       } else if (lines[i] === "Qty:") {
         i++;
-        transaction.quantity = lines[i];
-      } else if (lines[i] === "Cost:") {
+        transaction.quantity = lines[i][0];
         i++;
-        transaction.value = lines[i].substring(1);
+        transaction.value = getCost(lines[i]);
         localTransactions.push(transaction);
         transaction = resetTransaction();
       }
