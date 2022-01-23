@@ -1,11 +1,12 @@
 from datetime import date
 
+import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from pandas import Timestamp
-import numpy as np
 
-from .date_range import DateRange
+from backend.src.date_range import DateRange
+
 
 class ViewMoney:
 
@@ -131,10 +132,29 @@ class ViewMoney:
     def sort_dates(dates: list[DateRange]) -> list[DateRange]:
         return sorted(dates, reverse=True, key=lambda d: d.start)
 
-    # def spending(self, start_date: date, end_date: date) -> pd.DataFrame:
-    #     return self.df[(self.df[])]
+    def total_spending(self, start: date, end: date) -> int:
+        df = self._data_in_date_range(start, end)
+        return df[(df["outgoing"])]["value"].sum()
+
+    def total_income(self, start: date, end: date) -> int:
+        df = self._data_in_date_range(start, end)
+        return df[(df["outgoing"] != True) & (df["transaction_type"] != "Personal Transfer")]["value"].sum()
+
+    def total_savings(self, start: date, end: date) -> int:
+        df = self._data_in_date_range(start, end)
+        return df[(df["outgoing"] != True) & (df["transaction_type"] == "Personal Transfer")]["value"].sum()
+
+    def net_income(self, start: date, end: date) -> int:
+        return self.total_income(start, end) - self.total_spending(start, end) - self.total_savings(start, end)
+
+    @staticmethod
+    def to_sterling(value: int) -> str:
+        return f"£{value / 100:.2f}"
+
+    def _data_in_date_range(self, start: date, end: date) -> pd.DataFrame:
+        return self.df[(self.df["date"] >= np.datetime64(start)) & (self.df["date"] <= np.datetime64(end))]
 
 
 if __name__ == "__main__":
-    view = ViewMoney("../../data/prod")
-    print(view.get_financial_years())
+    view = ViewMoney("C:/Users/jakeg/Documents/FinanceV2/finance_data/prod")
+    print(view.net_income(date(2021, 11, 1), date(2021, 11, 30)) / 100)

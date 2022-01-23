@@ -1,8 +1,7 @@
 import datetime
 import os
-import subprocess
-from time import time
 
+from dateutil.parser import parse
 from flask import Flask, json, jsonify, request
 from flask_cors import CORS
 from git import Repo
@@ -44,8 +43,8 @@ def get_form_options() -> json:
 @app.route("/form_options/all", methods=['GET'])
 def get_all_form_options() -> json:
     """
-  Gets all form constants
-  """
+    Gets all form constants
+    """
     response = {
         "accounts": data_utils.get_data_as_list("accounts"),
         "categories": data_utils.get_data_as_list("categories"),
@@ -106,6 +105,23 @@ def sync_data() -> json:
     else:
         repo.git.pull()
     return jsonify({'data': 'synced'})
+
+
+@app.route("/view_money/summary", methods=["GET"])
+def summary() -> json:
+    """
+    Generates summary statistics (e.g. total income, savings, etc) for given timeframe
+    """
+    data: dict = request.args
+    print(data["start"])
+    start, end = parse(data["start"]), parse(data["end"])
+    response = {
+        "income": ViewMoney.to_sterling(view_money_helper.total_income(start, end)),
+        "spending": ViewMoney.to_sterling(view_money_helper.total_spending(start, end)),
+        "savings": ViewMoney.to_sterling(view_money_helper.total_savings(start, end)),
+        "net": ViewMoney.to_sterling(view_money_helper.net_income(start, end))
+    }
+    return jsonify(response)
 
 
 if __name__ == "__main__":

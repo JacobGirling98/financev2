@@ -7,7 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import {
   DescriptionMapping,
-  GetAllFormOptionsResponse,
+  FinanceApiResponse,
   NewMoneyRequest,
   Transaction,
 } from "../../types/types";

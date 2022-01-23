@@ -26,8 +26,8 @@ export interface GetAllFormOptionsData {
   descriptionMappings: DescriptionMapping[];
 }
 
-export interface GetAllFormOptionsResponse {
-  data: GetAllFormOptionsData
+export interface FinanceApiResponse<T> {
+  data: T
 }
 
 export interface CurrencyValues {
@@ -51,7 +51,7 @@ export interface NewMoneyRequest {
   data: NewMoneyRequestData;
 }
 
-export interface ReduxFetchState {
+export interface FormOptionsState {
   accounts: string[];
   categories: string[];
   descriptions: string[];
@@ -82,4 +82,15 @@ export interface DateRangesData {
 
 export interface DateRangesResponse {
   data: DateRangesData
+}
+
+export interface ViewMoneySummary {
+  income: number;
+  spending: number;
+  savings: number;
+  net: number;
+}
+
+export interface ViewMoneyState {
+  summary: { data: ViewMoneySummary, status: string | undefined }
 }

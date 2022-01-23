@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { DescriptionMapping, GetAllFormOptionsResponse, ReduxFetchState } from "../types/types";
+import { DescriptionMapping, FinanceApiResponse, FormOptionsState, GetAllFormOptionsData } from "../types/types";
 import type { RootState } from "./store";
 import axios from "axios";
 import { FORM_OPTIONS_URL } from "../utils/api-urls";
 
 
-const initialState: ReduxFetchState = {
+const initialState: FormOptionsState = {
   accounts: [],
   categories: [],
   descriptions: [],
@@ -17,7 +17,7 @@ const initialState: ReduxFetchState = {
 }
 
 export const fetchFormOptions = createAsyncThunk("formOptions/fetchFormOptions", async () => {
-  const response: GetAllFormOptionsResponse = await axios.get(
+  const response: FinanceApiResponse<GetAllFormOptionsData> = await axios.get(
     FORM_OPTIONS_URL
   );
   return response.data;
