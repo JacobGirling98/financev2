@@ -1,17 +1,17 @@
 import React from "react";
-import { TransactionRowProps } from "../../../types/props";
-import { Transaction } from "../../../types/types";
-import SelectCmp from "../../formComponents/SelectCmp";
-import "../forms.scss";
+import { TransactionRowProps } from "../../types/props";
+import { Transaction } from "../../types/types";
+import SelectCmp from "../formComponents/SelectCmp";
+import "./forms.scss";
 import {
   TRANSACTION_FIELDS,
   TRANSACTION_TYPES,
-} from "../../../utils/constants";
-import CreatableSelectCmp from "../../formComponents/CreatableSelectCmp";
-import CurrencyCmp from "../../formComponents/CurrencyCmp";
-import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-import { selectAccounts, selectCategories, selectDescriptions, selectIncomeSources, selectPayees } from "../../../stores/FormOptionsSlice";
-import { ADD_DESCRIPTION } from "../../../stores/actions";
+} from "../../utils/constants";
+import CreatableSelectCmp from "../formComponents/CreatableSelectCmp";
+import CurrencyCmp from "../formComponents/CurrencyCmp";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import { selectAccounts, selectCategories, selectDescriptions, selectIncomeSources, selectPayees } from "../../stores/FormOptionsSlice";
+import { ADD_DESCRIPTION } from "../../stores/actions";
 
 const TransactionRow: React.FC<TransactionRowProps> = props => {
 
@@ -21,7 +21,6 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
   const incomeSources = useAppSelector(selectIncomeSources);
   const payees = useAppSelector(selectPayees);
   const dispatch = useAppDispatch();
-
   
   const addDescription = (value: string): void => {
     dispatch(ADD_DESCRIPTION(value));

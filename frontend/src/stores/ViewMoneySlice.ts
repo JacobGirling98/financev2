@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { DateRange, DateRangesData, FinanceApiResponse, TimePeriod, ViewMoneyState, ViewMoneySummary } from "../types/types";
 import { DATE_RANGES_URL, VIEW_MONEY_SUMMARY_URL } from "../utils/api-urls";
 import { RootState } from "./store";

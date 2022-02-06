@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Modal from "react-bootstrap/modal";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { ADD_DESCRIPTION } from "../../stores/actions";
@@ -202,7 +202,7 @@ const UploadReceiptModal: React.FC<ModalProps> = ({
   }
 
   const handleNewMappingsSubmit = async () => {
-    let res = await axios.post(DESCRIPTION_MAPPING_URL, { unknownMappings });
+    await axios.post(DESCRIPTION_MAPPING_URL, { unknownMappings });
     const updatedTransactions = updateTransactions(transactions);
     dispatch(addDescriptionMappings(unknownMappings));
     addTransactions(updatedTransactions);

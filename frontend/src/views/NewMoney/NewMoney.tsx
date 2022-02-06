@@ -1,17 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FormEvent, MouseEvent, useEffect, useState } from "react";
 import SelectCmp from "../../components/formComponents/SelectCmp";
-import TransactionRow from "../../components/forms/TransactionRow/TransactionRow";
+import TransactionRow from "../../components/forms/TransactionRow";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import {
-  DescriptionMapping,
-  FinanceApiResponse,
-  NewMoneyRequest,
-  Transaction,
-} from "../../types/types";
-import { FORM_OPTIONS_URL, NEW_MONEY_URL } from "../../utils/api-urls";
+import { Transaction } from "../../types/types";
+import { NEW_MONEY_URL } from "../../utils/api-urls";
 
 import "./NewMoney.scss";
 import { TRANSACTION_TYPES } from "../../utils/constants";
@@ -141,7 +136,7 @@ const NewMoney: React.FC = () => {
       }
     });
     setTransactions(localTransactions);
-    let res = await axios.post(NEW_MONEY_URL, { transactions });
+    await axios.post(NEW_MONEY_URL, { transactions });
     resetTransactions();
     setSubmitSpinner(false);
   };
