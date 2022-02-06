@@ -113,7 +113,6 @@ def summary() -> json:
     Generates summary statistics (e.g. total income, savings, etc) for given timeframe
     """
     data: dict = request.args
-    print(data["start"])
     start, end = parse(data["start"]), parse(data["end"])
     response = {
         "income": ViewMoney.to_sterling(view_money_helper.total_income(start, end)),

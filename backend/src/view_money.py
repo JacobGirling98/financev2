@@ -76,6 +76,7 @@ class ViewMoney:
     def get_financial_months(self) -> list[DateRange]:
         incomes: list[date] = [ViewMoney.timestamp_to_date(x) for x in
                                self.df[(self.df["category"] == "Wages")]["date"].to_list()]
+        incomes.sort()
         indexes: list[int] = self.df.index[(self.df["category"] == "Wages")].to_list()
         if indexes[0] > 0:
             incomes.insert(0, ViewMoney.centre_new_month(incomes[0], -1))
@@ -85,7 +86,7 @@ class ViewMoney:
         dates: list[DateRange] = []
 
         for i in range(len(incomes) - 1):
-            dates.append(DateRange(incomes[i], incomes[i + 1], i))
+            dates.append(DateRange(incomes[i], incomes[i + 1] + relativedelta(days=-1), i))
 
         return self.sort_dates(dates)
 
@@ -138,14 +139,16 @@ class ViewMoney:
 
     def total_income(self, start: date, end: date) -> int:
         df = self._data_in_date_range(start, end)
-        return df[(df["outgoing"] != True) & (df["transaction_type"] != "Personal Transfer")]["value"].sum()
+        transfer_ = df[(df["outgoing"] != True) & (df["transaction_type"] != "Personal Transfer")]
+        print(transfer_)
+        return transfer_["value"].sum()
 
     def total_savings(self, start: date, end: date) -> int:
         df = self._data_in_date_range(start, end)
         return df[(df["outgoing"] != True) & (df["transaction_type"] == "Personal Transfer")]["value"].sum()
 
     def net_income(self, start: date, end: date) -> int:
-        return self.total_income(start, end) - self.total_spending(start, end) - self.total_savings(start, end)
+        return self.total_income(start, end) - self.total_spending(start, end)
 
     @staticmethod
     def to_sterling(value: int) -> str:
