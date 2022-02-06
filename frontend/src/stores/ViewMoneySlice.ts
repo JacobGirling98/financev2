@@ -1,7 +1,7 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosResponse } from "axios";
-import { FinanceApiResponse, ViewMoneyState, ViewMoneySummary } from "../types/types";
-import { VIEW_MONEY_SUMMARY_URL } from "../utils/api-urls";
+import { DateRange, DateRangesData, FinanceApiResponse, TimePeriod, ViewMoneyState, ViewMoneySummary } from "../types/types";
+import { DATE_RANGES_URL, VIEW_MONEY_SUMMARY_URL } from "../utils/api-urls";
 import { RootState } from "./store";
 
 const initialState: ViewMoneyState = {
@@ -13,8 +13,26 @@ const initialState: ViewMoneyState = {
       net: 0
     },
     status: "pending"
-  }
+  },
+  timePeriod: "Financial Months",
+  dateRanges: {
+    data: {
+      financial_months: [],
+      months:[],
+      years: [],
+      financial_years: []
+    },
+    status: "pending"
+  },
+  selectedDateRanges: []
 }
+
+export const fetchDateRanges = createAsyncThunk("viewMoney/fetchDateRanges", async () => {
+  const response: FinanceApiResponse<DateRangesData> = await axios.get(
+    DATE_RANGES_URL
+  );
+  return response.data;
+})
 
 export const fetchSummaryByDate = createAsyncThunk("viewMoney/fetchViewMoneySummary", async (dates: {start: string, end: string}) => {
   const { start, end } = dates
@@ -27,17 +45,39 @@ export const fetchSummaryByDate = createAsyncThunk("viewMoney/fetchViewMoneySumm
 export const viewMoney = createSlice({
   name: "viewMoney",
   initialState,
-  reducers: {},
+  reducers: {
+    setTimePeriod: (state, action: PayloadAction<TimePeriod["label"]>) => {
+      state.timePeriod = action.payload;
+    },
+    setSelectedDateRanges: (state, action: PayloadAction<DateRange[]>) => {
+      state.selectedDateRanges = action.payload
+    },
+    setDateRange: (state, action: PayloadAction<DateRange>) => {
+      state.dateRange = action.payload
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchSummaryByDate.pending, state => {
       state.summary.status = "loading";
     })
     builder.addCase(fetchSummaryByDate.fulfilled, (state, { payload }) => {
       state.summary.status = "succeeded";
-      state.summary.data = payload
+      state.summary.data = payload;
+    })
+    builder.addCase(fetchDateRanges.pending, state => {
+      state.dateRanges.status = "loading";
+    })
+    builder.addCase(fetchDateRanges.fulfilled, (state, { payload }) => {
+      state.dateRanges.status = "succeeded";
+      state.dateRanges.data = payload;
     })
   }
 })
 
 export default viewMoney.reducer;
+export const { setTimePeriod, setSelectedDateRanges, setDateRange } = viewMoney.actions;
+export const viewMoneyTimePeriod = (state: RootState) => state.viewMoney.timePeriod;
+export const viewMoneyDateRanges = (state: RootState) => state.viewMoney.dateRanges;
+export const viewMoneySelectedDateRanges = (state: RootState) => state.viewMoney.selectedDateRanges;
+export const viewMoneyDateRange = (state: RootState) => state.viewMoney.dateRange;
 export const viewMoneySummary = (state: RootState) => state.viewMoney.summary;

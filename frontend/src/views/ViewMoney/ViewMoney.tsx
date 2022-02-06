@@ -3,70 +3,57 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import SelectCmp from '../../components/formComponents/SelectCmp';
 import { DATE_RANGES_URL } from '../../utils/api-urls';
 import axios from 'axios';
-import { DateRange, DateRangesData, DateRangesResponse } from '../../types/types';
+import { DateRange, DateRangesData, DateRangesResponse, FinanceApiResponse, TimePeriod } from '../../types/types';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { fetchSummaryByDate, viewMoneySummary } from '../../stores/ViewMoneySlice';
+import { fetchDateRanges, fetchSummaryByDate, setDateRange, setSelectedDateRanges, setTimePeriod, viewMoneyDateRange, viewMoneyDateRanges, viewMoneySelectedDateRanges, viewMoneySummary, viewMoneyTimePeriod } from '../../stores/ViewMoneySlice';
 import Spinner from '../../components/Spinner';
+import { timePeriodsForSelect } from '../../utils/constants';
 
-interface TimePeriod {
-  label: string;
-  value: string;
-}
-
-const timePeriods: TimePeriod[] = [
-  { label: "Financial Months", value: "financial_months" },
-  { label: "Months", value: "months" },
-  { label: "Years", value: "years" },
-  { label: "Financial Years", value: "financial_years" },
-]
 
 const ViewMoney: React.FC = () => {
-  const [timePeriod, setTimePeriod] = useState<string>("Financial Months");
-  const [dateRanges, setDateRanges] = useState<DateRangesData>(); // all data ranges
-  const [selectedDateRanges, setSelectedDateRanges] = useState<DateRange[]>([]); // chosen date range based on time period
-  const [dateRange, setDateRange] = useState<DateRange>(); // chosen date range from selectedDateRanges
-
-  const summary = useAppSelector(viewMoneySummary)
   const dispatch = useAppDispatch();
+  const timePeriod = useAppSelector(viewMoneyTimePeriod);
+  const dateRanges = useAppSelector(viewMoneyDateRanges);
+  const selectedDateRanges = useAppSelector(viewMoneySelectedDateRanges);
+  const dateRange = useAppSelector(viewMoneyDateRange);
+  const summary = useAppSelector(viewMoneySummary)
 
   useEffect(() => {
-    const getDateRanges = async () => {
-      const { data }: DateRangesResponse = await axios.get(DATE_RANGES_URL);
-      setDateRanges(data);
-    }
-    getDateRanges();
-  }, [])
+    dispatch(fetchDateRanges());
+  }, [dispatch])
 
   useEffect(() => {
-    if (dateRanges) {
+    if (dateRanges.status === "succeeded" && dateRanges.data) {
+      let targetDateRange: DateRange[];
       switch (timePeriod) {
-        case timePeriods[0].label: {
-          setSelectedDateRanges(dateRanges.financial_months);
+        case timePeriodsForSelect[0].label: {
+          targetDateRange = dateRanges.data.financial_months;
           break;
         }
-        case timePeriods[1].label: {
-          setSelectedDateRanges(dateRanges.months);
+        case timePeriodsForSelect[1].label: {
+          targetDateRange = dateRanges.data.months;
           break;
         }
-        case timePeriods[2].label: {
-          setSelectedDateRanges(dateRanges.years);
+        case timePeriodsForSelect[2].label: {
+          targetDateRange = dateRanges.data.years;
           break;
         }
-        case timePeriods[3].label: {
-          setSelectedDateRanges(dateRanges.financial_years);
+        case timePeriodsForSelect[3].label: {
+          targetDateRange = dateRanges.data.financial_years;
           break;
         }
         default: {
-          setSelectedDateRanges(dateRanges.financial_months);
+          targetDateRange = dateRanges.data.financial_months;
           break;
         }
       }
+      dispatch(setSelectedDateRanges(targetDateRange));
     }
-  }, [timePeriod, dateRanges])
+  }, [dispatch, timePeriod, dateRanges])
 
   useEffect(() => {
-    setDateRange(selectedDateRanges[0]);
-  }, [selectedDateRanges]);
+    dispatch(setDateRange(selectedDateRanges[0]));
+  }, [dispatch, selectedDateRanges]);
 
   useEffect(() => {
     if (dateRange) {
@@ -113,15 +100,15 @@ const ViewMoney: React.FC = () => {
     }
   }
 
-  const handleTimePeriodChange = (label: string): void => {
-    const newPeriod: string | undefined = getTimePeriodValue(label);
+  const handleTimePeriodChange = (label: TimePeriod["label"]): void => {
+    const newPeriod: TimePeriod["label"] | undefined = getTimePeriodValue(label);
     if (newPeriod) {
-      setTimePeriod(newPeriod);
+      dispatch(setTimePeriod(newPeriod));
     }
   }
 
-  const getTimePeriodValue = (label: string): string | undefined => {
-    return timePeriods.find(period => period.label === label)?.label
+  const getTimePeriodValue = (label: TimePeriod["label"]): TimePeriod["label"] | undefined => {
+    return timePeriodsForSelect.find(period => period.label === label)?.label
   }
 
   const formatDateString = (date: Date): string => {
@@ -137,7 +124,7 @@ const ViewMoney: React.FC = () => {
   const handleDateRangeChange = (label: string): void => {
     const newDateRange: DateRange | undefined = getDateRange(label);
     if (newDateRange) 
-      setDateRange(newDateRange);
+      dispatch(setDateRange(newDateRange));
   }
 
   const getDateRange = (label: string): DateRange | undefined => {
@@ -157,10 +144,10 @@ const ViewMoney: React.FC = () => {
             <div className="d-flex flex-row justify-content-end align-items-center">
               <SelectCmp
                 className="form-Select px-1"
-                options={timePeriods.map(val => val.label)}
+                options={timePeriodsForSelect.map(val => val.label)}
                 id="dates"
                 value={timePeriod}
-                onChange={e => handleTimePeriodChange(e)}
+                onChange={e => handleTimePeriodChange(e as TimePeriod["label"])}
               />
               <SelectCmp
                 className="form-Select px-1"
@@ -178,32 +165,32 @@ const ViewMoney: React.FC = () => {
               <div className="col-md">
                 <div className="card p-3">
                   <div className="card-body">
-                    <h5 className="card-title">Income</h5>
-                    <p className="card-text">{summary.data.income}</p>
+                    <h4 className="card-text d-flex justify-content-center fst-italic fw-light">Income</h4>
+                    <h2 className="card-text d-flex justify-content-center fw-light">{summary.data.income}</h2>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md">
+                <div className="card p-3">
+                  <div className="card-body -dflex justify-content-center">
+                    <h4 className="card-text d-flex justify-content-center fst-italic fw-light">Spending</h4>
+                    <h2 className="card-text d-flex justify-content-center fw-light">{summary.data.spending}</h2>
                   </div>
                 </div>
               </div>
               <div className="col-md">
                 <div className="card p-3">
                   <div className="card-body">
-                    <h5 className="card-title">Spending</h5>
-                    <p className="card-text">{summary.data.spending}</p>
+                    <h4 className="card-text d-flex justify-content-center fst-italic fw-light">Savings</h4>
+                    <h2 className="card-text d-flex justify-content-center fw-light">{summary.data.savings}</h2>
                   </div>
                 </div>
               </div>
               <div className="col-md">
                 <div className="card p-3">
                   <div className="card-body">
-                    <h5 className="card-title">Savings</h5>
-                    <p className="card-text">{summary.data.savings}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md">
-                <div className="card p-3">
-                  <div className="card-body">
-                    <h5 className="card-title">Net Income</h5>
-                    <p className="card-text">{summary.data.net}</p>
+                    <h4 className="card-text d-flex justify-content-center fst-italic fw-light">Net Income</h4>
+                    <h2 className="card-text d-flex justify-content-center fw-light">{summary.data.net}</h2>
                   </div>
                 </div>
               </div>

@@ -92,5 +92,14 @@ export interface ViewMoneySummary {
 }
 
 export interface ViewMoneyState {
-  summary: { data: ViewMoneySummary, status: string | undefined }
+  summary: { data: ViewMoneySummary, status: string | undefined },
+  timePeriod: TimePeriod["label"],
+  dateRanges: { data: DateRangesData, status: string | undefined },
+  selectedDateRanges: DateRange[],
+  dateRange?: DateRange
+}
+
+export interface TimePeriod {
+  label: "Financial Months" | "Financial Years" | "Months" | "Years";
+  value: "financial_months" | "financial_years" | "months" | "years";
 }

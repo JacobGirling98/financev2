@@ -1,3 +1,5 @@
+import { TimePeriod } from "../types/types";
+
 export const enum TRANSACTION_FIELDS {
   date = "date",
   outgoing = "outgoing",
@@ -19,3 +21,10 @@ export const enum TRANSACTION_TYPES {
   income = "Income",
   personalTransfer = "Personal Transfer"
 }
+
+export const timePeriodsForSelect: TimePeriod[] = [
+  { label: "Financial Months", value: "financial_months" },
+  { label: "Months", value: "months" },
+  { label: "Years", value: "years" },
+  { label: "Financial Years", value: "financial_years" },
+]
