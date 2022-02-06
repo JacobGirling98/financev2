@@ -15,7 +15,10 @@ const ViewMoney: React.FC = () => {
             <DateRangeSelects />
           </div>
         </div>
-        <Summary />
+        <div className="my-4">
+          <Summary />
+        </div>
+        <hr />
       </div>
     </>
   );
