@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { DateRange, DateRangesData, FinanceApiResponse, TimePeriod, ViewMoneyState, ViewMoneySummary } from "../types/types";
-import { DATE_RANGES_URL, VIEW_MONEY_SUMMARY_URL } from "../utils/api-urls";
+import { DateRange, DateRangesData, FinanceApiResponse, TimePeriod, TransactionsTableRow, ViewMoneyState, ViewMoneySummary } from "../types/types";
+import { DATE_RANGES_URL, VIEW_MONEY_SUMMARY_URL, VIEW_MONEY_TRANSACTIONS_URL } from "../utils/api-urls";
 import { RootState } from "./store";
 
 const initialState: ViewMoneyState = {
@@ -24,7 +24,11 @@ const initialState: ViewMoneyState = {
     },
     status: "pending"
   },
-  selectedDateRanges: []
+  selectedDateRanges: [],
+  transactions: {
+    data: [],
+    status: "pending"
+  }
 }
 
 export const fetchDateRanges = createAsyncThunk("viewMoney/fetchDateRanges", async () => {
@@ -39,6 +43,15 @@ export const fetchSummaryByDate = createAsyncThunk("viewMoney/fetchViewMoneySumm
   const response: FinanceApiResponse<ViewMoneySummary> = await axios.get(
     VIEW_MONEY_SUMMARY_URL, { params: { start, end } }
   )
+  return response.data
+})
+
+export const fetchTransactionsByDate = createAsyncThunk("viewMoney/fetchViewMoneyTransactions", async (dates: {start: string, end: string}) => {
+  const { start, end } = dates
+  const response: FinanceApiResponse<TransactionsTableRow[]> = await axios.get(
+    VIEW_MONEY_TRANSACTIONS_URL, { params: { start, end } }
+  )
+  console.log(response)
   return response.data
 })
 
@@ -71,6 +84,13 @@ export const viewMoney = createSlice({
       state.dateRanges.status = "succeeded";
       state.dateRanges.data = payload;
     })
+    builder.addCase(fetchTransactionsByDate.pending, state => {
+      state.transactions.status = "loading";
+    })
+    builder.addCase(fetchTransactionsByDate.fulfilled, (state, { payload }) => {
+      state.transactions.status = "succeeded";
+      state.transactions.data = payload;
+    })
   }
 })
 
@@ -81,3 +101,4 @@ export const viewMoneyDateRanges = (state: RootState) => state.viewMoney.dateRan
 export const viewMoneySelectedDateRanges = (state: RootState) => state.viewMoney.selectedDateRanges;
 export const viewMoneyDateRange = (state: RootState) => state.viewMoney.dateRange;
 export const viewMoneySummary = (state: RootState) => state.viewMoney.summary;
+export const viewMoneyTransactions = (state: RootState) => state.viewMoney.transactions;

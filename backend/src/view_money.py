@@ -157,7 +157,14 @@ class ViewMoney:
     def _data_in_date_range(self, start: date, end: date) -> pd.DataFrame:
         return self.df[(self.df["date"] >= np.datetime64(start)) & (self.df["date"] <= np.datetime64(end))]
 
+    def transactions_for_table(self, start: date, end: date) -> list[dict]:
+        df = self._data_in_date_range(start, end)[["date", "value", "description", "category", "quantity"]]
+        df["date"] = df["date"].apply(lambda x: str(x.date()))
+        df["value"] = df["value"].apply(lambda x: x / 100)
+        return df.to_dict(
+            "records")
+
 
 if __name__ == "__main__":
     view = ViewMoney("C:/Users/jakeg/Documents/FinanceV2/finance_data/prod")
-    print(view.net_income(date(2021, 11, 1), date(2021, 11, 30)) / 100)
+    print(view.transactions_for_table(date(2021, 11, 1), date(2021, 11, 30)))

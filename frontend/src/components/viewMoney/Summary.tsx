@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../hooks/redux';
-import { fetchSummaryByDate, viewMoneyDateRange, viewMoneySummary } from '../stores/ViewMoneySlice';
-import Spinner from './Spinner';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { fetchSummaryByDate, viewMoneyDateRange, viewMoneySummary } from '../../stores/ViewMoneySlice';
+import Spinner from '../Spinner';
 import SummaryTile from './SummaryTile';
 
 const Summary: React.FC = () => {

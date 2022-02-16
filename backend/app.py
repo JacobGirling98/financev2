@@ -123,5 +123,17 @@ def summary() -> json:
     return jsonify(response)
 
 
+@app.route("/view_money/transactions", methods=["GET"])
+def transactions() -> json:
+    """
+    Generates list of transactions for given dates
+    """
+    data: dict = request.args
+    start, end = parse(data["start"]), parse(data["end"])
+    table = view_money_helper.transactions_for_table(start, end)
+    print(table)
+    return jsonify(table)
+
+
 if __name__ == "__main__":
     app.run()

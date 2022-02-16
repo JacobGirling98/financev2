@@ -91,12 +91,21 @@ export interface ViewMoneySummary {
   net: number;
 }
 
+export interface TransactionsTableRow {
+  date: string;
+  category: string;
+  description: string;
+  quantity: number;
+  value: number;
+}
+
 export interface ViewMoneyState {
   summary: { data: ViewMoneySummary, status: string | undefined },
   timePeriod: TimePeriod["label"],
   dateRanges: { data: DateRangesData, status: string | undefined },
   selectedDateRanges: DateRange[],
-  dateRange?: DateRange
+  dateRange?: DateRange,
+  transactions: { data: TransactionsTableRow[], status: string | undefined }
 }
 
 export interface TimePeriod {

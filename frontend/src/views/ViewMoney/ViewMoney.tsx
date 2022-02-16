@@ -1,7 +1,8 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import DateRangeSelects from "../../components/forms/DateRangeSelects";
-import Summary from "../../components/Summary";
+import Summary from "../../components/viewMoney/Summary";
+import Table from "../../components/viewMoney/Table";
 
 const ViewMoney: React.FC = () => {
   return (
@@ -19,6 +20,11 @@ const ViewMoney: React.FC = () => {
           <Summary />
         </div>
         <hr />
+        <div className="my-4">
+          <Table 
+            title="Transactions"
+          />
+        </div>
       </div>
     </>
   );
