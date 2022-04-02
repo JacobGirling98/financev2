@@ -27,7 +27,7 @@ if os.getenv("SYSTEM") != "MAC":
     new_money_helper.complete_standing_orders()
 
 
-@app.route("/form_options/", methods=['GET'])
+@app.route("/form_options", methods=['GET'])
 def get_form_options() -> json:
     """
   Takes request parameter for name of file to read and returns list of form constants, e.g. categories

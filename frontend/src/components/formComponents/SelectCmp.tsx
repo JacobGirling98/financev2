@@ -4,6 +4,7 @@ import { SelectCmpProps } from "../../types/props";
 import { SelectOptions } from "../../types/types";
 
 const SelectCmp: React.FC<SelectCmpProps> = props => {
+
   const options: SelectOptions[] = props.options.map(entry => {
     return { label: entry, value: entry };
   });

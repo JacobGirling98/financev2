@@ -5,6 +5,8 @@ import Routes from "../../Routes";
 import "./HomePage.scss";
 import { BASE_URL } from "../../utils/api-urls";
 import Spinner from "../../components/Spinner";
+import { getAllFormOptions } from "../../api/FormOptions";
+import { useQuery } from "react-query";
 
 const HomePage: React.FC = () => {
   
@@ -67,3 +69,4 @@ const HomePage: React.FC = () => {
 };
 
 export default HomePage;
+
