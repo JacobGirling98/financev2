@@ -1,6 +1,6 @@
 import axios from "axios";
-import { FinanceApiResponse, GetAllFormOptionsData } from "../types/types";
-import { BASE_URL, FORM_OPTIONS_URL } from "../utils/api-urls";
+import { DescriptionMapping, FinanceApiResponse, GetAllFormOptionsData } from "../types/types";
+import { BASE_URL, DESCRIPTION_MAPPING_URL, FORM_OPTIONS_URL } from "../utils/api-urls";
 
 export const getAllFormOptions = async () => {
   const response: FinanceApiResponse<GetAllFormOptionsData> = await axios.get(
@@ -14,4 +14,9 @@ export const getFormOptions = async (dataType: string) => {
     BASE_URL + "form_options", { params: { dataType } }
   );
   return response.data.data;
+}
+
+export const postDescriptionMappings = async (data: DescriptionMapping[]) => {
+  const response = await axios.post(DESCRIPTION_MAPPING_URL, { unknownMappings: data })
+  return response.data;
 }
