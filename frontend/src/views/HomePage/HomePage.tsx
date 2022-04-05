@@ -5,12 +5,16 @@ import Routes from "../../Routes";
 import "./HomePage.scss";
 import { BASE_URL } from "../../utils/api-urls";
 import Spinner from "../../components/Spinner";
-import { getAllFormOptions } from "../../api/FormOptions";
-import { useQuery } from "react-query";
+import useFormOptions from "../../hooks/useFormOptions";
+import { useFormOptionsContext } from "../../context/FormOptions";
 
 const HomePage: React.FC = () => {
   
   const [loading, setLoading] = useState<Boolean>(false);
+
+  const { setDescriptions } = useFormOptionsContext();
+
+  useFormOptions();
 
   const handleSyncData = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();

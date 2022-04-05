@@ -6,27 +6,24 @@ import "./forms.scss";
 import { TRANSACTION_FIELDS, TRANSACTION_TYPES } from "../../utils/constants";
 import CreatableSelectCmp from "../formComponents/CreatableSelectCmp";
 import CurrencyCmp from "../formComponents/CurrencyCmp";
-import { useAppDispatch } from "../../hooks/redux";
-import { ADD_DESCRIPTION } from "../../stores/actions";
-import { useQuery } from "react-query";
-import { getFormOptions } from "../../api/FormOptions";
 import useFormOptions from "../../hooks/useFormOptions";
+import { useFormOptionsContext } from "../../context/FormOptions";
 
 const TransactionRow: React.FC<TransactionRowProps> = props => {
-  
-  const {
-    accounts,
-    categories,
-    descriptions,
-    incomeSources,
-    payees,
-    render
-  } = useFormOptions();
-  
-  const dispatch = useAppDispatch();
+  const { 
+    accounts, 
+    categories, 
+    descriptions, 
+    incomeSources, 
+    payees, 
+    render 
+  } =
+    useFormOptions();
+
+  const { setDescriptions } = useFormOptionsContext();
 
   const addDescription = (value: string): void => {
-    dispatch(ADD_DESCRIPTION(value));
+    setDescriptions([...descriptions, value]);
   };
 
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>): void => {
@@ -52,7 +49,6 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
       value
     );
   };
-
 
   return (
     <>
