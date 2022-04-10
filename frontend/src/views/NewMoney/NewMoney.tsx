@@ -37,8 +37,6 @@ const NewMoney: React.FC = () => {
   const [submitSpinner, setSubmitSpinner] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const formOptionsStatus = useAppSelector(state => state.formOptions.status);
-
   useEffect(() => {
     resetTransactions();
   }, [transactionType]);
@@ -141,8 +139,6 @@ const NewMoney: React.FC = () => {
     setSubmitSpinner(false);
   };
 
-  const readyToRender = formOptionsStatus !== null;
-
   return (
     <>
       <div className="row px-3">
@@ -168,24 +164,20 @@ const NewMoney: React.FC = () => {
         noValidate
         onSubmit={e => handleSubmit(e)}
       >
-        {readyToRender ? (
-          transactions.map((transaction, index) => {
-            return (
-              <div className="row mb-3">
-                <TransactionRow
-                  index={index}
-                  transaction={transaction}
-                  handleTransactionChange={handleTransactionChange}
-                  transactionType={transactionType}
-                  removeRows={removeRows}
-                  removeRowsDisabled={transactions.length === 1}
-                />
-              </div>
-            );
-          })
-        ) : (
-          <Spinner />
-        )}
+        {transactions.map((transaction, index) => {
+          return (
+            <div className="row mb-3">
+              <TransactionRow
+                index={index}
+                transaction={transaction}
+                handleTransactionChange={handleTransactionChange}
+                transactionType={transactionType}
+                removeRows={removeRows}
+                removeRowsDisabled={transactions.length === 1}
+              />
+            </div>
+          );
+        })}
         {submitSpinner && <Spinner />}
         <UploadReceiptModal
           showModal={showModal}
