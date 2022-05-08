@@ -17,8 +17,7 @@ const TransactionRow: React.FC<TransactionRowProps> = props => {
     incomeSources, 
     payees, 
     render 
-  } =
-    useFormOptions();
+  } = useFormOptions();
 
   const { setDescriptions } = useFormOptionsContext();
 

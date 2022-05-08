@@ -1,73 +1,40 @@
-import React, { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { fetchSummaryByDate, viewMoneyDateRange, viewMoneySummary } from '../../stores/ViewMoneySlice';
-import Spinner from '../Spinner';
-import SummaryTile from './SummaryTile';
+import React from "react";
+import { useQuery } from "react-query";
+import { getSummary } from "../../api/ViewMoney";
+import { useViewMoneyContext } from "../../context/ViewMoney";
+import { ViewMoneySummary } from "../../types/types";
+import Spinner from "../Spinner";
+import SummaryTile from "./SummaryTile";
 
 const Summary: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const dateRange = useAppSelector(viewMoneyDateRange);
-  const summary = useAppSelector(viewMoneySummary);
+  const { dateRange } = useViewMoneyContext();
 
-  useEffect(() => {
-    const formatDateRequestParam = (date: Date): string => {
-      const split: string[] = date.toString().split(" ");
-      return `${split[3]}-${monthToNumber(split[2])}-${split[1]}`
-    }
+  const startDate = dateRange.start;
+  const endDate = dateRange.end;
 
-    if (dateRange) {
-      const start = formatDateRequestParam(dateRange.start)
-      const end = formatDateRequestParam(dateRange.end)
-      dispatch(fetchSummaryByDate({ start, end }))
+  const { data, isSuccess } = useQuery<ViewMoneySummary>(
+    ["fetchSummary", startDate, endDate],
+    () => getSummary(startDate, endDate),
+    {
+      enabled: !!startDate && !!startDate,
     }
-  }, [dispatch, dateRange])
-
-  const monthToNumber = (month: string): string => {
-    switch (month.toLowerCase()) {
-      case "jan": 
-        return "1";
-      case "feb":
-        return "2";
-      case "mar": 
-        return "3"
-      case "apr":
-        return "4"
-      case "may": 
-        return "5"
-      case "jun":
-        return "6"
-      case "jul":
-        return "7"
-      case "aug":
-        return "8"
-      case "sep":
-        return "9"
-      case "oct":
-        return "10"
-      case "nov":
-        return "11"
-      case "dec":
-        return "12"
-      default:
-        return "0"
-    }
-  }
+  );
 
   return (
     <>
-      {summary.status === "succeeded" ? (
+      {isSuccess && !!data ? (
         <div className="row g-3">
           <div className="col-md">
-            <SummaryTile title="Income" body={summary.data.income} />
+            <SummaryTile title="Income" body={data.income} />
           </div>
           <div className="col-md">
-            <SummaryTile title="Spending" body={summary.data.spending} />
+            <SummaryTile title="Spending" body={data.spending} />
           </div>
           <div className="col-md">
-            <SummaryTile title="Savings" body={summary.data.savings} />
+            <SummaryTile title="Savings" body={data.savings} />
           </div>
           <div className="col-md">
-            <SummaryTile title="Net Income" body={summary.data.net} />
+            <SummaryTile title="Net Income" body={data.net} />
           </div>
         </div>
       ) : (

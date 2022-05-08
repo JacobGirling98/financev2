@@ -20,11 +20,11 @@ const ViewMoney: React.FC = () => {
           <Summary />
         </div>
         <hr />
-        <div className="my-4">
+        {/* <div className="my-4">
           <Table 
             title="Transactions"
           />
-        </div>
+        </div> */}
       </div>
     </>
   );

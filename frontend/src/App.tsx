@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import HomePage from "./views/HomePage/HomePage";
 import { FormOptionsProvider } from "./context/FormOptions";
+import { ViewMoneyProvider } from "./context/ViewMoney";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -14,8 +15,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <FormOptionsProvider>
-        <HomePage />
-        <ReactQueryDevtools />
+        <ViewMoneyProvider>
+          <HomePage />
+          <ReactQueryDevtools />
+        </ViewMoneyProvider>
       </FormOptionsProvider>
     </QueryClientProvider>
   );

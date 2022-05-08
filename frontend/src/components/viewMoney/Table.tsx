@@ -5,24 +5,12 @@ import tableIcons from "./TableIcons";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { fetchTransactionsByDate, viewMoneyDateRange, viewMoneyTransactions } from "../../stores/ViewMoneySlice";
 import { TransactionsTableRow } from "../../types/types";
+import { useViewMoneyContext } from "../../context/ViewMoney";
 
 
 interface TableProps {
   title: string
 }
-
-const data: TransactionsTableRow[] = [
-  {date: "2020-10-16", category: "Food", description: "Choccy Milk", quantity: 1, value: 1.40},
-  {date: "2020-10-17", category: "Clothes", description: "Jumper", quantity: 1, value: 60.99},
-  {date: "2020-10-18", category: "Gaming", description: "Elden Ring", quantity: 1, value: 44.99},
-  {date: "2020-10-19", category: "Food", description: "Caramel", quantity: 1, value: 1.50},
-  {date: "2020-10-20", category: "Tech", description: "Monitor", quantity: 1, value: 289.99},
-  {date: "2020-10-16", category: "Food", description: "Choccy Milk", quantity: 1, value: 1.40},
-  {date: "2020-10-17", category: "Clothes", description: "Jumper", quantity: 1, value: 60.99},
-  {date: "2020-10-18", category: "Gaming", description: "Elden Ring", quantity: 1, value: 44.99},
-  {date: "2020-10-20", category: "Tech", description: "Monitor", quantity: 1, value: 289.99},
-  {date: "2020-10-19", category: "Food", description: "Caramel", quantity: 1, value: 1.50},
-];
 
 const columns: Column<TransactionsTableRow>[] = [
   { title: "Date", field: "date", type:"date" },
@@ -36,7 +24,7 @@ const Table: React.FC<TableProps> = ({
   title
 }) => {
   const dispatch = useAppDispatch();
-  const dateRange = useAppSelector(viewMoneyDateRange);
+  const { dateRange } = useViewMoneyContext()
   const transactions = useAppSelector(viewMoneyTransactions);
 
   useEffect(() => {
@@ -46,8 +34,10 @@ const Table: React.FC<TableProps> = ({
     }
 
     if (dateRange) {
-      const start = formatDateRequestParam(dateRange.start)
-      const end = formatDateRequestParam(dateRange.end)
+      // const start = formatDateRequestParam(dateRange.start)
+      // const end = formatDateRequestParam(dateRange.end)
+      const start = dateRange.start
+      const end = dateRange.end
       dispatch(fetchTransactionsByDate({ start, end }))
     }
   }, [dispatch, dateRange])

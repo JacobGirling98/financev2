@@ -1,58 +1,62 @@
 import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { fetchDateRanges, setDateRange, setSelectedDateRanges, setTimePeriod, viewMoneyDateRange, viewMoneyDateRanges, viewMoneySelectedDateRanges, viewMoneyTimePeriod } from "../../stores/ViewMoneySlice";
-import { DateRange, TimePeriod } from "../../types/types";
+import { useQuery } from "react-query";
+import { getDateRanges } from "../../api/ViewMoney";
+import { useViewMoneyContext } from "../../context/ViewMoney";
+import { DateRange, DateRangesData, TimePeriod } from "../../types/types";
 import { timePeriodsForSelect } from "../../utils/constants";
 import SelectCmp from "../formComponents/SelectCmp";
 
 const DateRangeSelects: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const timePeriod = useAppSelector(viewMoneyTimePeriod);
-  const dateRanges = useAppSelector(viewMoneyDateRanges);
-  const selectedDateRanges = useAppSelector(viewMoneySelectedDateRanges);
-  const dateRange = useAppSelector(viewMoneyDateRange);
+
+  const { 
+    timePeriod,
+    setTimePeriod,
+    selectedDateRanges,
+    setSelectedDateRanges,
+    dateRange,
+    setDateRange
+   } = useViewMoneyContext()
   
-  useEffect(() => {
-    dispatch(fetchDateRanges());
-  }, [dispatch])
+  const { data: dateRanges, isSuccess} = useQuery<DateRangesData>("fetchDateRanges", () => getDateRanges())
 
   useEffect(() => {
-    if (dateRanges.status === "succeeded" && dateRanges.data) {
+    if (isSuccess && !!dateRanges) {
       let targetDateRange: DateRange[];
       switch (timePeriod) {
         case timePeriodsForSelect[0].label: {
-          targetDateRange = dateRanges.data.financial_months;
+          targetDateRange = dateRanges.financial_months;
           break;
         }
         case timePeriodsForSelect[1].label: {
-          targetDateRange = dateRanges.data.months;
+          targetDateRange = dateRanges.months;
           break;
         }
         case timePeriodsForSelect[2].label: {
-          targetDateRange = dateRanges.data.years;
+          targetDateRange = dateRanges.years;
           break;
         }
         case timePeriodsForSelect[3].label: {
-          targetDateRange = dateRanges.data.financial_years;
+          targetDateRange = dateRanges.financial_years;
           break;
         }
         default: {
-          targetDateRange = dateRanges.data.financial_months;
+          targetDateRange = dateRanges.financial_months;
           break;
         }
       }
-      dispatch(setSelectedDateRanges(targetDateRange));
+      setSelectedDateRanges(targetDateRange);
     }
-  }, [dispatch, timePeriod, dateRanges])
+  }, [timePeriod, dateRanges, setSelectedDateRanges, isSuccess])
 
   useEffect(() => {
-    dispatch(setDateRange(selectedDateRanges[0]));
-  }, [dispatch, selectedDateRanges]);
+    if (selectedDateRanges.length > 0)
+      setDateRange(selectedDateRanges[0]);
+  }, [setDateRange, selectedDateRanges]);
 
   const handleTimePeriodChange = (label: TimePeriod["label"]): void => {
     const newPeriod: TimePeriod["label"] | undefined = getTimePeriodValue(label);
     if (newPeriod) {
-      dispatch(setTimePeriod(newPeriod));
+      setTimePeriod(newPeriod);
     }
   }
 
@@ -60,24 +64,85 @@ const DateRangeSelects: React.FC = () => {
     return timePeriodsForSelect.find(period => period.label === label)?.label
   }
 
-  const formatDateString = (date: Date): string => {
-    const splitDate: string[] = date.toString().split(" ");
-    const year: string = splitDate[3].substring(2,);
-    return `${splitDate[1]} ${splitDate[2]} ${year}`;
+  const formatDateRange = (date: DateRange | undefined): string => {
+    if (!!date) {
+      switch (timePeriod) {
+        case timePeriodsForSelect[0].label:
+          return formatFinancialMonthDateRange(date)
+        case timePeriodsForSelect[1].label:
+            return formatMonthDateRange(date)
+        case timePeriodsForSelect[2].label:
+          return formatYearDateRange(date)
+        case timePeriodsForSelect[3].label:
+          return formatFinancialYearDateRange(date)
+      }
+    }
+    return ""
   }
 
-  const mapDateRangeToString = (dateRange: DateRange | undefined): string => {
-    return dateRange ? `${formatDateString(dateRange.start)} - ${formatDateString(dateRange.end)}` : "";
+  const formatFinancialMonthDateRange = (dateRange: DateRange): string => {
+    return `${formatMonth(dateRange.start)} - ${formatMonth(dateRange.end)}`; 
   }
 
+  const formatMonthDateRange = (dateRange: DateRange): string => {
+    return formatMonth(dateRange.start); 
+  }
+
+  const formatYearDateRange = (dateRange: DateRange): string => {
+    return dateRange.start.split("-")[0]
+  }
+
+  const formatFinancialYearDateRange = (dateRange: DateRange): string => {
+    return `${dateRange.start.split("-")[0]} - ${dateRange.end.split("-")[0]}`
+  }
+
+  const formatMonth = (date: string): string => {
+    const splitDate = date.split("-")
+    return `${monthFromNumber(splitDate[1])} ${shortenYear(splitDate[0])}`
+  }
+
+  const shortenYear = (year: string): string => {
+    return year.substring(2,);
+  }
+  
   const handleDateRangeChange = (label: string): void => {
     const newDateRange: DateRange | undefined = getDateRange(label);
-    if (newDateRange) 
-      dispatch(setDateRange(newDateRange));
+    if (!!newDateRange && setDateRange) 
+      setDateRange(newDateRange);
   }
 
   const getDateRange = (label: string): DateRange | undefined => {
-    return selectedDateRanges.find(range => mapDateRangeToString(range) === label);
+    return selectedDateRanges.find(range => formatDateRange(range) === label);
+  }
+
+  const monthFromNumber = (number: string): string => {
+    switch (number) {
+      case "01":
+        return "Jan"
+      case "02":
+        return "Feb"
+      case "03":
+        return "Mar"
+      case "04":
+        return "Apr"
+      case "05":
+        return "May"
+      case "06":
+        return "Jun"
+      case "07":
+        return "Jul"
+      case "8":
+        return "Aug"
+      case "09":
+        return "Sep"
+      case "10":
+        return "Oct"
+      case "11":
+        return "Nov"
+      case "12":
+        return "Dec"
+      }
+    return "-"
   }
   
   return (
@@ -92,10 +157,10 @@ const DateRangeSelects: React.FC = () => {
       <SelectCmp
         className="form-Select px-1"
         options={selectedDateRanges.map(val => {
-          return mapDateRangeToString(val);
+          return formatDateRange(val);
         })}
         id="dates"
-        value={mapDateRangeToString(dateRange)}
+        value={formatDateRange(dateRange)}
         onChange={e => handleDateRangeChange(e)}
       />
     </>

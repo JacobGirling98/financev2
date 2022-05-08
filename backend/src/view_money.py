@@ -7,6 +7,8 @@ from pandas import Timestamp
 
 from src.date_range import DateRange
 
+from backend.src.date_range import date_to_string
+
 
 class ViewMoney:
 
@@ -71,7 +73,7 @@ class ViewMoney:
             current_date += relativedelta(months=1)
             _id += 1
 
-        return self.sort_dates(dates)
+        return self._dates_to_strings(self.sort_dates(dates))
 
     def get_financial_months(self) -> list[DateRange]:
         incomes: list[date] = [ViewMoney.timestamp_to_date(x) for x in
@@ -88,7 +90,7 @@ class ViewMoney:
         for i in range(len(incomes) - 1):
             dates.append(DateRange(incomes[i], incomes[i + 1] + relativedelta(days=-1), i))
 
-        return self.sort_dates(dates)
+        return self._dates_to_strings(self.sort_dates(dates))
 
     def get_years(self) -> list[DateRange]:
         first_transaction: date = ViewMoney.timestamp_to_date(self.df.iloc[0]["date"])
@@ -107,7 +109,7 @@ class ViewMoney:
             current_date += relativedelta(years=1)
             _id += 1
 
-        return self.sort_dates(dates)
+        return self._dates_to_strings(self.sort_dates(dates))
 
     def get_financial_years(self) -> list[DateRange]:
         first_date: date = ViewMoney.timestamp_to_date(self.df[(self.df["category"] == "Wages")].iloc[0]["date"])
@@ -127,7 +129,7 @@ class ViewMoney:
             current_date = ViewMoney.next_financial_year(current_date)
             _id += 1
 
-        return self.sort_dates(dates)
+        return self._dates_to_strings(self.sort_dates(dates))
 
     @staticmethod
     def sort_dates(dates: list[DateRange]) -> list[DateRange]:
@@ -163,6 +165,10 @@ class ViewMoney:
         df["value"] = df["value"].apply(lambda x: x / 100)
         return df.to_dict(
             "records")
+
+    @staticmethod
+    def _dates_to_strings(dates: list[DateRange]):
+        return list(map(date_to_string, dates))
 
 
 if __name__ == "__main__":

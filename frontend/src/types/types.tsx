@@ -68,8 +68,8 @@ export interface DescriptionMapping {
 }
 
 export interface DateRange {
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
   id: number;
 }
 
@@ -101,9 +101,6 @@ export interface TransactionsTableRow {
 
 export interface ViewMoneyState {
   summary: { data: ViewMoneySummary, status: string | undefined },
-  timePeriod: TimePeriod["label"],
-  dateRanges: { data: DateRangesData, status: string | undefined },
-  selectedDateRanges: DateRange[],
   dateRange?: DateRange,
   transactions: { data: TransactionsTableRow[], status: string | undefined }
 }
